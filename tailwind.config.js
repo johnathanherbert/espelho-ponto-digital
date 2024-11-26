@@ -1,18 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    './templates/**/*.html',
-    './app/templates/**/*.html',
-  ],
+  content: ["./templates/**/*.html", "./static/**/*.js"],
   theme: {
-    extend: {
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-      },
-    },
+    extend: {},
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
-  darkMode: 'media',
-}
+  plugins: [require("@tailwindcss/forms")],
+};

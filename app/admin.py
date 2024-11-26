@@ -195,6 +195,37 @@ class ColaboradorAdmin(admin.ModelAdmin):
         form.base_fields['nome'].widget.attrs['class'] = 'vTextField'
         return form
 
+    # Adicione o método get_urls
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('import-excel/', self.admin_site.admin_view(self.import_excel_view),
+                 name='app_colaborador_import_excel'),
+        ]
+        return custom_urls + urls
+
+    def import_excel_view(self, request):
+        print("Acessando view de importação")  # Debug
+        if request.method == 'POST':
+            if 'excel_file' in request.FILES:
+                try:
+                    importar_excel(self, request, request.FILES['excel_file'])
+                    self.message_user(request, "Importação concluída com sucesso!")
+                    return HttpResponseRedirect("../")
+                except Exception as e:
+                    print(f"Erro na importação: {str(e)}")  # Debug
+                    self.message_user(request, f"Erro na importação: {str(e)}", level='ERROR')
+        return render(
+            request, 
+            'admin/app/colaborador/import.html',  # Caminho corrigido
+            context={'opts': self.model._meta}
+        )
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['show_import_button'] = True
+        return super().changelist_view(request, extra_context)
+
 @admin.register(EspelhoPonto, site=admin_site)
 class EspelhoPontoAdmin(admin.ModelAdmin):
     list_display = ('arquivo', 'data_envio')

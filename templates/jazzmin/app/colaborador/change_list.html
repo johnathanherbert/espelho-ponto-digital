@@ -1,0 +1,6 @@
+{% extends "jazzmin/change_list.html" %} {% load i18n %} {% load admin_urls %}
+{% block object-tools-items %}
+<li>
+  <a href="import-excel/" class="addlink">Importar Excel</a>
+</li>
+{{ block.super }} {% endblock %}

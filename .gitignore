@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 *.so
 .Python
+env/
 build/
 develop-eggs/
 dist/
@@ -15,7 +16,6 @@ lib64/
 parts/
 sdist/
 var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -26,62 +26,20 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media/
-static/admin/
 staticfiles/
 
-# Virtual Environment
+# Environment
+.env
+.venv
 venv/
 ENV/
-env/
-.env
 
-# VS Code
-.vscode/
-*.code-workspace
-
-# PyCharm
+# IDE
 .idea/
-
-# Arquivos temporários
+.vscode/
 *.swp
+*.swo
+
+# OS
 .DS_Store
 Thumbs.db
-
-# Arquivos de ambiente
-.env
-.env.local
-.env.*.local
-
-# Arquivos de cache
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.py[cod]
-*$py.class
-
-# Arquivos de log
-*.log
-
-# Espelho de Ponto Digital
-
-Sistema de gerenciamento de espelho de ponto digital desenvolvido com Django e Jazzmin.
-
-## 🚀 Funcionalidades
-
-- Gerenciamento de colaboradores
-- Upload e visualização de espelhos de ponto
-- Interface administrativa personalizada
-- Sistema de autenticação e permissões
-- Tema customizado e responsivo
-
-## 🛠️ Tecnologias
-
-- Python 3.x
-- Django 5.x
-- Jazzmin (Interface administrativa)
-- SQLite3
-
-## ⚙️ Configuração
-
-1. Clone o repositório

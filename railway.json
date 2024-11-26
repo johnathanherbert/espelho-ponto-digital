@@ -1,0 +1,9 @@
+{
+  "build": {
+    "builder": "nixpacks",
+    "buildCommand": "python -m pip install -r requirements.txt && python manage.py collectstatic --noinput"
+  },
+  "run": {
+    "command": "gunicorn core.wsgi:application --bind 0.0.0.0:$PORT"
+  }
+}
