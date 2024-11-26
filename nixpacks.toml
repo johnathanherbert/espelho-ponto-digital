@@ -1,17 +1,12 @@
 [phases.setup]
-nixPkgs = ['python312', 'postgresql', 'nodejs_18', 'npm']
+nixPkgs = ['python312', 'postgresql']
+aptPkgs = ['python3-pip', 'build-essential']
 
 [phases.install]
-cmds = [
-    "python -m pip install -r requirements.txt",
-    "npm install"
-]
+cmds = ['python -m pip install --upgrade pip', 'pip install -r requirements.txt']
 
 [phases.build]
-cmds = [
-    "npm run build",
-    "python manage.py collectstatic --noinput"
-]
+cmds = ['python manage.py collectstatic --noinput']
 
 [start]
-cmd = "gunicorn core.wsgi:application --bind 0.0.0.0:$PORT"
+cmd = 'gunicorn core.wsgi:application --bind 0.0.0.0:$PORT'
