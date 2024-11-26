@@ -14,18 +14,97 @@ from django.db.models.functions import TruncMonth
 from django.utils.html import format_html
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.models import User, Group
+from datetime import timedelta
 
 class CustomAdminSite(admin.AdminSite):
     site_header = 'Espelho de Ponto'
     site_title = 'Administração'
     index_title = 'Dashboard'
 
+    def index(self, request, extra_context=None):
+        """
+        Customiza o dashboard do admin com métricas
+        """
+        # Obtém o mês atual
+        hoje = timezone.now()
+        primeiro_dia_mes = hoje.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        
+        # Métricas dos Cards
+        colaboradores_metrics = {
+            "colaboradores_ativos": Colaborador.objects.filter(
+                data_demissao__isnull=True
+            ).count(),
+            "admitidos_mes": Colaborador.objects.filter(
+                data_admissao__year=hoje.year,
+                data_admissao__month=hoje.month
+            ).count(),
+            "demitidos_mes": Colaborador.objects.filter(
+                data_demissao__year=hoje.year,
+                data_demissao__month=hoje.month
+            ).count(),
+            "total_colaboradores": Colaborador.objects.count(),
+        }
+        
+        # Gráfico 1: Admissões por Mês (últimos 6 meses)
+        admissoes_dados = (
+            Colaborador.objects
+            .filter(
+                data_admissao__isnull=False,
+                data_admissao__gte=hoje - timedelta(days=180)
+            )
+            .annotate(mes=TruncMonth('data_admissao'))
+            .values('mes')
+            .annotate(total=Count('id'))
+            .order_by('mes')
+        )
+        
+        # Gráfico 2: Colaboradores por Cargo
+        cargos_dados = (
+            Colaborador.objects
+            .filter(data_demissao__isnull=True)
+            .values('cargo')
+            .annotate(total=Count('id'))
+            .order_by('-total')[:8]  # Top 8 cargos
+        )
+        
+        # Gráfico 3: Colaboradores por Centro de Custo
+        setores_dados = (
+            Colaborador.objects
+            .filter(data_demissao__isnull=True)
+            .values('centro_custo')
+            .annotate(total=Count('id'))
+            .order_by('-total')
+        )
+        
+        # Gráfico 4: Status dos Colaboradores (Ativos vs Inativos)
+        status_dados = {
+            'Ativos': colaboradores_metrics['colaboradores_ativos'],
+            'Inativos': Colaborador.objects.filter(data_demissao__isnull=False).count()
+        }
+
+        # Formatando dados para os gráficos
+        context = {
+            **colaboradores_metrics,
+            'labels_admissoes': [d['mes'].strftime('%b/%Y') for d in admissoes_dados],
+            'valores_admissoes': [d['total'] for d in admissoes_dados],
+            
+            'labels_cargos': [d['cargo'] for d in cargos_dados],
+            'valores_cargos': [d['total'] for d in cargos_dados],
+            
+            'labels_setores': [d['centro_custo'] for d in setores_dados],
+            'valores_setores': [d['total'] for d in setores_dados],
+            
+            'labels_status': list(status_dados.keys()),
+            'valores_status': list(status_dados.values()),
+        }
+        
+        return super().index(request, extra_context=context)
+
     def get_app_list(self, request):
         """
         Retorna uma lista personalizada de aplicativos ordenados
         """
         app_list = super().get_app_list(request)
-        # Ordenar apps: app, auth, admin
         app_ordering = {
             'app': 1,
             'auth': 2,
@@ -44,39 +123,9 @@ admin_site.register(Group, GroupAdmin)
 # Registrar os outros modelos
 @admin.register(Colaborador, site=admin_site)
 class ColaboradorAdmin(admin.ModelAdmin):
-    list_display = [
-        'display_colaborador_info',
-        'display_status',
-        'display_setor',
-    ]
-    
-    @display(description="Informações")
-    def display_colaborador_info(self, obj):
-        """Exibe informações do colaborador em duas linhas com iniciais"""
-        iniciais = ''.join(n[0].upper() for n in obj.nome.split()[:2])
-        return [
-            obj.nome,  # linha principal
-            f"Matrícula: {obj.matricula}",  # linha secundária
-            iniciais,  # iniciais no círculo
-        ]
-    
-    @display(
-        description=_("Status"),
-        ordering="data_demissao",
-        boolean=True
-    )
-    def display_status(self, obj):
-        return obj.data_demissao is None
-    
-    @display(
-        description=_("Setor"),
-        ordering="centro_custo"
-    )
-    def display_setor(self, obj):
-        return obj.centro_custo
-    
-    search_fields = ('matricula', 'nome', 'cpf', 'pis')
-    list_filter = ('cargo', 'turno', 'centro_custo')
+    list_display = ('matricula', 'nome', 'cargo', 'centro_custo', 'data_admissao', 'status_colaborador')
+    list_filter = ('centro_custo', 'cargo', 'data_admissao', 'data_demissao')
+    search_fields = ('nome', 'matricula', 'cpf', 'pis')
     ordering = ('nome',)
     
     fieldsets = (
@@ -88,54 +137,63 @@ class ColaboradorAdmin(admin.ModelAdmin):
         }),
         ('Datas', {
             'fields': ('data_admissao', 'data_demissao')
-        })
+        }),
     )
-    
-    change_list_template = "admin/colaborador_changelist.html"
-    
-    def get_urls(self):
-        urls = super().get_urls()
-        custom_urls = [
-            path('import-excel/', self.import_excel_view, name='colaborador_import_excel'),
-        ]
-        return custom_urls + urls
 
-    def import_excel_view(self, request):
-        if request.method == "POST":
-            if 'excel_file' not in request.FILES:
-                messages.error(request, 'Nenhum arquivo foi enviado.')
-                return render(request, 'admin/excel_import.html')
-            
-            excel_file = request.FILES['excel_file']
-            
-            # Verificar extensão do arquivo
-            if not excel_file.name.endswith(('.xls', '.xlsx')):
-                messages.error(request, 'Por favor, envie um arquivo Excel válido (.xls ou .xlsx)')
-                return render(request, 'admin/excel_import.html')
-            
-            try:
-                importar_excel(self, request, excel_file)
-                return HttpResponseRedirect("../")
-            except Exception as e:
-                messages.error(request, f'Erro ao processar arquivo: {str(e)}')
-                return render(request, 'admin/excel_import.html')
-            
-        return render(request, 'admin/excel_import.html')
+    def status_colaborador(self, obj):
+        return "Ativo" if obj.data_demissao is None else "Inativo"
+    status_colaborador.short_description = "Status"
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).order_by('nome')
+    
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        try:
+            search_term_as_int = int(search_term)
+            queryset |= self.model.objects.filter(matricula=search_term_as_int)
+        except ValueError:
+            pass
+        return queryset, use_distinct
 
-    def get_metrics(self, request):
-        return {
-            "total_ativos": {
-                "label": "Colaboradores Ativos",
-                "value": Colaborador.objects.filter(data_demissao__isnull=True).count(),
-            },
-            "admitidos_mes": {
-                "label": "Admitidos este mês",
-                "value": Colaborador.objects.filter(
-                    data_admissao__month=timezone.now().month,
-                    data_admissao__year=timezone.now().year
-                ).count(),
-            },
+    class Media:
+        css = {
+            'all': ('admin/css/custom_jazzmin.css',)
         }
+
+    # Personalização das ações em massa
+    actions = ['marcar_como_demitido']
+
+    def marcar_como_demitido(self, request, queryset):
+        hoje = timezone.now().date()
+        queryset.update(data_demissao=hoje)
+        self.message_user(request, f"{queryset.count()} colaborador(es) marcado(s) como demitido(s).")
+    marcar_como_demitido.short_description = "Marcar selecionados como demitidos"
+
+    # Customização da exibição de campos
+    def get_list_display(self, request):
+        list_display = list(super().get_list_display(request))
+        return list_display
+
+    def get_list_filter(self, request):
+        list_filter = list(super().get_list_filter(request))
+        return list_filter
+
+    # Formatação de campos específicos
+    @admin.display(description='Data de Admissão')
+    def data_admissao_formatada(self, obj):
+        return obj.data_admissao.strftime('%d/%m/%Y') if obj.data_admissao else '-'
+
+    @admin.display(description='Data de Demissão')
+    def data_demissao_formatada(self, obj):
+        return obj.data_demissao.strftime('%d/%m/%Y') if obj.data_demissao else '-'
+
+    # Customização do formulário
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['matricula'].widget.attrs['class'] = 'vTextField'
+        form.base_fields['nome'].widget.attrs['class'] = 'vTextField'
+        return form
 
 @admin.register(EspelhoPonto, site=admin_site)
 class EspelhoPontoAdmin(admin.ModelAdmin):
