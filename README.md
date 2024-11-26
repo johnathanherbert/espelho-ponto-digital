@@ -56,9 +56,8 @@ Sistema de gerenciamento de espelho de ponto digital desenvolvido com Django e J
 ## 📱 Telas do Sistema
 
 <p align="center">
-  <img src="path_to_screenshot1.png" alt="Dashboard" width="200"/>
-  <img src="path_to_screenshot2.png" alt="Lista de Colaboradores" width="200"/>
-  <img src="path_to_screenshot3.png" alt="Visualização de Ponto" width="200"/>
+  <img src=".github/screenshots/dashboard.png" alt="Dashboard" width="200"/>
+  <img src=".github/screenshots/app.png" alt="Busca de espelho de ponto" width="200"/>
 </p>
 
 ## 📋 Requisitos do Sistema
@@ -68,7 +67,6 @@ Sistema de gerenciamento de espelho de ponto digital desenvolvido com Django e J
 - Navegador web moderno
 - 512MB RAM (mínimo)
 - 1GB de espaço em disco
-
 
 ## 📝 Licença
 
