@@ -69,14 +69,6 @@ Sistema de gerenciamento de espelho de ponto digital desenvolvido com Django e J
 - 512MB RAM (mínimo)
 - 1GB de espaço em disco
 
-## 🤝 Como Contribuir
-
-1. Faça um Fork do projeto
-2. Crie uma Branch para sua Feature (`git checkout -b feature/AmazingFeature`)
-3. Adicione suas mudanças (`git add .`)
-4. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-5. Push para a Branch (`git push origin feature/AmazingFeature`)
-6. Abra um Pull Request
 
 ## 📝 Licença
 

@@ -62,3 +62,26 @@ Thumbs.db
 
 # Arquivos de log
 *.log
+
+# Espelho de Ponto Digital
+
+Sistema de gerenciamento de espelho de ponto digital desenvolvido com Django e Jazzmin.
+
+## 🚀 Funcionalidades
+
+- Gerenciamento de colaboradores
+- Upload e visualização de espelhos de ponto
+- Interface administrativa personalizada
+- Sistema de autenticação e permissões
+- Tema customizado e responsivo
+
+## 🛠️ Tecnologias
+
+- Python 3.x
+- Django 5.x
+- Jazzmin (Interface administrativa)
+- SQLite3
+
+## ⚙️ Configuração
+
+1. Clone o repositório
