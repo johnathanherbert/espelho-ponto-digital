@@ -1,10 +1,6 @@
 # 📊 Espelho de Ponto Digital
 
 <p align="center">
-  <img src="path_to_your_logo.png" alt="Logo do Espelho de Ponto Digital" width="200"/>
-</p>
-
-<p align="center">
   <img src="https://img.shields.io/badge/Python-3.9+-blue.svg" alt="Python Version">
   <img src="https://img.shields.io/badge/Django-5.0+-green.svg" alt="Django Version">
   <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
