@@ -1,0 +1,124 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Card de Colaboradores Ativos -->
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ colaboradores_ativos }}</h3>
+                    <p>Colaboradores Ativos</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <a href="{% url 'admin:app_colaborador_changelist' %}" class="small-box-footer">
+                    Ver todos <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Card de Admitidos no Mês -->
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ admitidos_mes }}</h3>
+                    <p>Admitidos este mês</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <a href="#" class="small-box-footer">
+                    Mais informações <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Card de Espelhos do Mês -->
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>{{ espelhos_mes }}</h3>
+                    <p>Espelhos de Ponto este mês</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <a href="{% url 'admin:app_espelhoponto_changelist' %}" class="small-box-footer">
+                    Ver todos <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Gráfico de Admissões -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Admissões por Mês</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="admissoesChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Distribuição por Setor -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Colaboradores por Setor</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="setoresChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Configuração dos gráficos
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gráfico de Admissões
+        const admissoesCtx = document.getElementById('admissoesChart').getContext('2d');
+        new Chart(admissoesCtx, {
+            type: 'line',
+            data: {
+                labels: {{ admissoes_por_mes|safe }},
+                datasets: [{
+                    label: 'Admissões',
+                    data: {{ admissoes_por_mes|safe }},
+                    borderColor: '#17a2b8',
+                    tension: 0.1
+                }]
+            }
+        });
+
+        // Gráfico de Setores
+        const setoresCtx = document.getElementById('setoresChart').getContext('2d');
+        new Chart(setoresCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ setores|safe }},
+                datasets: [{
+                    data: {{ setores|safe }},
+                    backgroundColor: [
+                        '#17a2b8',
+                        '#28a745',
+                        '#ffc107',
+                        '#dc3545',
+                        '#6c757d'
+                    ]
+                }]
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

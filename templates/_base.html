@@ -1,0 +1,174 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ site_config.site_name|default:"Espelho de Ponto Digital" }}</title>
+
+    {% if site_config.favicon %}
+    <link rel="icon" type="image/x-icon" href="{{ site_config.favicon.url }}">
+    {% endif %}
+
+    <style>
+      :root {
+        --primary-color: {{ site_config.primary_color|default:"#3B82F6" }};
+        --secondary-color: {{ site_config.secondary_color|default:"#1D4ED8" }};
+        --background-color: {{ site_config.background_color|default:"#F3F4F6" }};
+        --text-color: {{ site_config.text_color|default:"#111827" }};
+        --link-color: {{ site_config.link_color|default:"#2563EB" }};
+      }
+    </style>
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="h-full bg-[var(--background-color)] text-[var(--text-color)]">
+    <!-- Header -->
+    <header class="bg-[var(--primary-color)] shadow-lg">
+      <nav class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo/Nome -->
+          <div class="flex items-center">
+            <a href="/" class="flex items-center space-x-3">
+              {% if site_config.logo %}
+              <img src="{{ site_config.logo.url }}" alt="Logo" class="h-8 w-auto">
+              {% else %}
+              <div class="text-white font-bold text-xl">
+                {{ site_config.site_name|default:"Espelho de Ponto" }}
+              </div>
+              {% endif %}
+            </a>
+          </div>
+
+          <!-- Menu Central -->
+          <div class="hidden md:flex items-center space-x-8">
+            <a href="/" class="text-white hover:text-gray-200 transition-colors duration-200 font-medium">
+              Início
+            </a>
+            <a href="/#como-usar" class="text-white hover:text-gray-200 transition-colors duration-200 font-medium">
+              Como Usar
+            </a>
+            {% if site_config.contact_email %}
+            <a href="mailto:{{ site_config.contact_email }}" class="text-white hover:text-gray-200 transition-colors duration-200 font-medium">
+              Contato
+            </a>
+            {% endif %}
+          </div>
+
+          <!-- Menu Direita -->
+          <div class="flex items-center space-x-4">
+            {% if user.is_staff %}
+            <a href="/admin/" 
+               class="bg-[var(--secondary-color)] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-200 text-sm font-medium">
+              Admin
+            </a>
+            {% endif %}
+            
+            <!-- Menu Mobile -->
+            <button class="md:hidden text-white hover:text-gray-200" id="mobile-menu-button">
+              <i class="fas fa-bars text-xl"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Menu Mobile Dropdown -->
+        <div class="md:hidden hidden" id="mobile-menu">
+          <div class="px-2 pt-2 pb-3 space-y-1">
+            <a href="/" class="block text-white hover:text-gray-200 py-2">
+              Início
+            </a>
+            <a href="/#como-usar" class="block text-white hover:text-gray-200 py-2">
+              Como Usar
+            </a>
+            {% if site_config.contact_email %}
+            <a href="mailto:{{ site_config.contact_email }}" class="block text-white hover:text-gray-200 py-2">
+              Contato
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer class="mt-auto py-6 bg-[var(--secondary-color)] text-white">
+      <div class="container mx-auto px-4 text-center">
+        {{ site_config.footer_text|safe }}
+
+        {% if site_config.contact_email or site_config.contact_phone %}
+        <div class="mt-4">
+          {% if site_config.contact_email %}
+          <a href="mailto:{{ site_config.contact_email }}" class="text-white hover:text-gray-200 mx-2">
+            {{ site_config.contact_email }}
+          </a>
+          {% endif %}
+          
+          {% if site_config.contact_phone %}
+          <span class="text-white mx-2">{{ site_config.contact_phone }}</span>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        {% if site_config.facebook_url or site_config.instagram_url or site_config.linkedin_url %}
+        <div class="mt-4 flex justify-center space-x-4">
+          {% if site_config.facebook_url %}
+          <a href="{{ site_config.facebook_url }}" target="_blank" rel="noopener" class="text-white hover:text-gray-200">
+            <i class="fab fa-facebook"></i>
+          </a>
+          {% endif %}
+          
+          {% if site_config.instagram_url %}
+          <a href="{{ site_config.instagram_url }}" target="_blank" rel="noopener" class="text-white hover:text-gray-200">
+            <i class="fab fa-instagram"></i>
+          </a>
+          {% endif %}
+          
+          {% if site_config.linkedin_url %}
+          <a href="{{ site_config.linkedin_url }}" target="_blank" rel="noopener" class="text-white hover:text-gray-200">
+            <i class="fab fa-linkedin"></i>
+          </a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+      // Menu Mobile Toggle
+      document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+      });
+
+      // Fecha o menu mobile ao clicar em um link
+      document.querySelectorAll('#mobile-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+          document.getElementById('mobile-menu').classList.add('hidden');
+        });
+      });
+
+      // Fecha o menu mobile ao redimensionar para desktop
+      window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768) { // 768px é o breakpoint md do Tailwind
+          document.getElementById('mobile-menu').classList.add('hidden');
+        }
+      });
+    </script>
+  </body>
+</html>

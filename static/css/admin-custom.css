@@ -1,0 +1,87 @@
+/* Ocultar labels automáticos */
+.model-label,
+.app-label {
+    display: none !important;
+}
+
+/* Ajustar espaçamento do sidebar */
+.unfold-sidebar-navigation {
+    margin-top: 1rem;
+}
+
+/* Estilo para itens do menu */
+.unfold-sidebar-item {
+    position: relative;
+    margin-bottom: 0.5rem;
+}
+
+/* Remover decorações e labels sobrepostos */
+.unfold-sidebar-item::before,
+.unfold-sidebar-item::after,
+.unfold-sidebar-item .label {
+    display: none !important;
+}
+
+/* Ajustar links do menu */
+.unfold-sidebar-link {
+    display: flex !important;
+    align-items: center !important;
+    padding: 0.75rem 1rem !important;
+    color: rgb(209 213 219) !important;
+    text-decoration: none !important;
+    transition: all 0.2s !important;
+}
+
+/* Hover state */
+.unfold-sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+/* Ícones do menu */
+.unfold-sidebar-icon {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+    margin-right: 0.75rem !important;
+}
+
+/* Texto do menu */
+.unfold-sidebar-text {
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    line-height: 1.25rem !important;
+}
+
+/* Remover elementos que possam causar sobreposição */
+.unfold-sidebar *[class*="absolute"],
+.unfold-sidebar *[class*="fixed"] {
+    position: static !important;
+}
+
+/* Ajustar z-index */
+.unfold-sidebar {
+    z-index: 40 !important;
+}
+
+/* Remover padding extra */
+.unfold-sidebar-group {
+    padding: 0 !important;
+}
+
+/* Ajustar cabeçalho do sidebar */
+.unfold-sidebar-header {
+    padding: 1.5rem 1rem !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Ajustar rodapé do sidebar */
+.unfold-sidebar-footer {
+    padding: 1rem !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Garantir que não haja sobreposição de texto */
+.unfold-sidebar-item span {
+    position: static !important;
+    display: inline-block !important;
+}

@@ -1,0 +1,72 @@
+<div class="color-picker-container">
+  <input type="{{ widget.type }}" name="{{ widget.name }}" {% if widget.value !=
+  None %}value="{{ widget.value }}"{% endif %} {% include
+  "django/forms/widgets/attrs.html" %} class="color-input" >
+  <input
+    type="text"
+    value="{{ widget.value|default:'#000000' }}"
+    class="hex-input"
+    data-color-input="{{ widget.attrs.id }}"
+  />
+</div>
+
+<style>
+  .color-picker-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .color-input {
+    -webkit-appearance: none;
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .color-input::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border-radius: 8px;
+  }
+
+  .color-input::-webkit-color-swatch {
+    border: none;
+    border-radius: 8px;
+  }
+
+  .hex-input {
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-family: monospace;
+    width: 100px;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const container = document.querySelector(".color-picker-container");
+    if (!container) return;
+
+    const colorInput = container.querySelector(".color-input");
+    const hexInput = container.querySelector(".hex-input");
+
+    colorInput.addEventListener("input", (e) => {
+      hexInput.value = e.target.value.toUpperCase();
+    });
+
+    hexInput.addEventListener("input", (e) => {
+      const value = e.target.value;
+      if (/^#[0-9A-F]{6}$/i.test(value)) {
+        colorInput.value = value;
+      }
+    });
+
+    if (colorInput.value) {
+      hexInput.value = colorInput.value.toUpperCase();
+    }
+  });
+</script>

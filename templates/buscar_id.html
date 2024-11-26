@@ -1,0 +1,253 @@
+{% extends '_base.html' %} {% block content %}
+<div
+  class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
+>
+  <!-- Hero Section -->
+  <div
+    class="relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-800 dark:to-blue-900"
+  >
+    <!-- Decorative elements -->
+    <div class="absolute inset-0">
+      <div
+        class="absolute inset-0 bg-[url('data:image/svg+xml,...')] opacity-10"
+      ></div>
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-transparent to-black/5"
+      ></div>
+    </div>
+
+    <div class="relative">
+      <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center">
+        <h1
+          class="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight"
+        >
+          Espelho de Ponto Digital
+        </h1>
+        <p class="text-xl text-blue-100 max-w-2xl mx-auto">
+          Acesse seu espelho de ponto de forma rápida e segura
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
+    <div class="max-w-md mx-auto">
+      <!-- Search Card -->
+      <div
+        class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 backdrop-blur-xl backdrop-filter mb-8 border border-gray-100 dark:border-gray-700 transform transition-all duration-200"
+      >
+        <form
+          method="post"
+          action="{% url 'buscar_ponto_form' %}"
+          class="space-y-6"
+        >
+          {% csrf_token %}
+          <div class="space-y-2">
+            <label
+              for="matricula"
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Matrícula
+            </label>
+            <input
+              type="text"
+              name="matricula"
+              id="matricula"
+              required
+              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              placeholder="Digite sua matrícula"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label
+              for="cpf"
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              CPF
+            </label>
+            <input
+              type="text"
+              name="cpf"
+              id="cpf"
+              required
+              maxlength="14"
+              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              placeholder="000.000.000-00"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+          >
+            <svg
+              class="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 7l-6 6m0 0l6 6m-6-6h12"
+              />
+            </svg>
+            Buscar Espelho de Ponto
+          </button>
+        </form>
+      </div>
+
+      <!-- Instructions Card -->
+      <div
+        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-8 border border-gray-100 dark:border-gray-700"
+      >
+        <h3
+          class="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center"
+        >
+          <svg
+            class="w-5 h-5 mr-2 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          Como consultar?
+        </h3>
+        <ul class="space-y-6">
+          <li class="flex items-start">
+            <span
+              class="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-sm font-semibold mr-4"
+            >
+              1
+            </span>
+            <p class="text-gray-600 dark:text-gray-300 pt-1">
+              Digite sua matrícula no primeiro campo
+            </p>
+          </li>
+          <li class="flex items-start">
+            <span
+              class="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-sm font-semibold mr-4"
+            >
+              2
+            </span>
+            <p class="text-gray-600 dark:text-gray-300 pt-1">
+              Informe seu CPF para validação
+            </p>
+          </li>
+          <li class="flex items-start">
+            <span
+              class="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-sm font-semibold mr-4"
+            >
+              3
+            </span>
+            <p class="text-gray-600 dark:text-gray-300 pt-1">
+              Clique em "Buscar Espelho de Ponto"
+            </p>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Help Section -->
+      <div class="text-center pb-8">
+        <p class="text-gray-600 dark:text-gray-400">
+          Precisa de ajuda?
+          <a
+            href="#"
+            class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium inline-flex items-center group"
+          >
+            Entre em contato com o RH
+            <svg
+              class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Adicione este script para formatar o CPF automaticamente -->
+<script>
+  document.getElementById("cpf").addEventListener("input", function (e) {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.length <= 11) {
+      value = value.replace(
+        /(\d{3})(\d{3})(\d{3})(\d{2})/,
+        function (regex, arg1, arg2, arg3, arg4) {
+          if (arg4) return `${arg1}.${arg2}.${arg3}-${arg4}`;
+          if (arg3) return `${arg1}.${arg2}.${arg3}`;
+          if (arg2) return `${arg1}.${arg2}`;
+          return arg1;
+        }
+      );
+      e.target.value = value;
+    }
+  });
+</script>
+
+<!-- Error Message Modal -->
+{% if messages %}
+<div
+  class="fixed inset-0 flex items-center justify-center z-50"
+  x-data="{ show: true }"
+  x-show="show"
+>
+  <div class="fixed inset-0 bg-black/50 backdrop-blur-sm"></div>
+  <div
+    class="relative bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full m-4 p-6 shadow-2xl"
+  >
+    {% for message in messages %}
+    <div class="text-center">
+      <div
+        class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 mb-4"
+      >
+        <svg
+          class="h-6 w-6 text-red-600 dark:text-red-300"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+        Erro na Busca
+      </h3>
+      <p class="text-gray-500 dark:text-gray-400">{{ message }}</p>
+    </div>
+    {% endfor %}
+    <div class="mt-5">
+      <button
+        @click="show = false"
+        class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm transition-colors duration-200"
+      >
+        Fechar
+      </button>
+    </div>
+  </div>
+</div>
+{% endif %} {% endblock %}

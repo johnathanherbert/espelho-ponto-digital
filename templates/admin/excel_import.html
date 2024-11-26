@@ -1,0 +1,339 @@
+{% extends 'admin/base.html' %} {% load static %} {% block title %}Importar
+Excel{% endblock %} {% block extrastyle %}
+<style>
+    .import-container {
+        max-width: 64rem;
+        margin: 2rem auto;
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .import-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+        background: linear-gradient(to right, #2563eb, #1d4ed8);
+        border-radius: 1rem 1rem 0 0;
+        color: white;
+    }
+
+    .import-content {
+        padding: 2rem;
+    }
+
+    .instructions-box {
+        background-color: #eff6ff;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid #bfdbfe;
+    }
+
+    .upload-zone {
+        border: 2px dashed #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .upload-zone:hover {
+        border-color: #2563eb;
+        background-color: #f8fafc;
+    }
+
+    .upload-zone.drag-over {
+        border-color: #2563eb;
+        background-color: #eff6ff;
+    }
+
+    .file-status {
+        background-color: #f8fafc;
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 1px solid #e5e7eb;
+    }
+
+    .import-actions {
+        background-color: #f8fafc;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    .btn-primary {
+        background-color: #2563eb;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+        background-color: #1d4ed8;
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background-color: white;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+        background-color: #f9fafb;
+    }
+
+    .loading-state {
+        background-color: #eff6ff;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
+
+    .message {
+        padding: 1rem;
+        border-radius: 0.75rem;
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .message.success {
+        background-color: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+
+    .message.error {
+        background-color: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    @media (max-width: 640px) {
+        .import-container {
+            margin: 1rem;
+        }
+    }
+
+    /* Dark mode support */
+    [data-bs-theme="dark"] {
+        .import-container {
+            background-color: #1e293b;
+        }
+
+        .instructions-box {
+            background-color: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+
+        .upload-zone {
+            border-color: #475569;
+        }
+
+        .upload-zone:hover {
+            background-color: #334155;
+        }
+
+        .file-status, .import-actions {
+            background-color: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+
+        .btn-secondary {
+            background-color: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="import-container">
+    <div class="import-header">
+        <h2 class="text-2xl font-semibold">Importar Colaboradores via Excel</h2>
+        <p class="mt-2 opacity-90">Faça upload do arquivo Excel com os dados dos colaboradores</p>
+    </div>
+
+    <div class="import-content">
+        <!-- Instruções -->
+        <div class="instructions-box">
+            <div class="flex items-center mb-3">
+                <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                <h3 class="text-lg font-medium">Instruções</h3>
+            </div>
+            <p class="mb-2">O arquivo Excel deve conter as seguintes colunas:</p>
+            <ul class="list-disc list-inside space-y-1 ml-4">
+                <li>Matrícula</li>
+                <li>Nome</li>
+                <li>CPF</li>
+                <li>Data de Admissão</li>
+                <li>Cargo</li>
+                <li>Centro de Custo</li>
+            </ul>
+        </div>
+
+        <!-- Form -->
+        <form action="" method="post" enctype="multipart/form-data" id="uploadForm">
+            {% csrf_token %}
+            
+            <!-- Upload Zone -->
+            <label for="excel_file" class="upload-zone" id="dropZone">
+                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                <p class="text-gray-600">
+                    <span class="font-semibold">Passo 1:</span> 
+                    Clique para selecionar ou arraste o arquivo
+                </p>
+                <p class="text-sm text-gray-500 mt-1">XLSX, XLS</p>
+                <input type="file" name="excel_file" id="excel_file" class="hidden" accept=".xlsx,.xls" required>
+            </label>
+
+            <!-- File Status -->
+            <div id="fileStatus" class="file-status hidden">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span>Arquivo selecionado: <span id="fileName" class="font-medium"></span></span>
+                </div>
+                <button type="button" onclick="clearFile()" class="text-gray-500 hover:text-red-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Import Actions -->
+            <div id="importActions" class="import-actions hidden">
+                <h4 class="text-lg font-medium mb-2">Passo 2: Importar Dados</h4>
+                <p class="text-gray-600 mb-4">Clique no botão abaixo para iniciar a importação dos dados.</p>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="clearFile()" class="btn-secondary">
+                        <i class="fas fa-times mr-2"></i> Cancelar
+                    </button>
+                    <button type="submit" id="importButton" class="btn-primary">
+                        <i class="fas fa-file-import mr-2"></i> Iniciar Importação
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state hidden">
+            <div class="animate-spin mr-3">
+                <i class="fas fa-circle-notch text-blue-600"></i>
+            </div>
+            <span class="text-blue-800 font-medium">Importando dados...</span>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="mt-6 space-y-3">
+            {% for message in messages %}
+            <div class="message {% if message.tags == 'success' %}success{% else %}error{% endif %}">
+                <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} mr-3"></i>
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function updateUI() {
+        const fileInput = document.getElementById("excel_file");
+        const fileStatus = document.getElementById("fileStatus");
+        const fileName = document.getElementById("fileName");
+        const importActions = document.getElementById("importActions");
+
+        if (fileInput.files.length > 0) {
+            fileName.textContent = fileInput.files[0].name;
+            fileStatus.classList.remove("hidden");
+            importActions.classList.remove("hidden");
+        } else {
+            fileStatus.classList.add("hidden");
+            importActions.classList.add("hidden");
+        }
+    }
+
+    function clearFile() {
+        const fileInput = document.getElementById("excel_file");
+        fileInput.value = "";
+        updateUI();
+    }
+
+    // Form submission
+    document
+        .getElementById("uploadForm")
+        .addEventListener("submit", function (e) {
+            const loadingState = document.getElementById("loadingState");
+            const importButton = document.getElementById("importButton");
+
+            importButton.disabled = true;
+            importButton.classList.add("opacity-50", "cursor-not-allowed");
+            loadingState.classList.remove("hidden");
+        });
+
+    // Mostra o nome do arquivo selecionado
+    const fileInput = document.getElementById("excel_file");
+    fileInput.addEventListener("change", updateUI);
+
+    // Drag and drop
+    const dropZone = document.querySelector('label[for="excel_file"]');
+
+    ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ["dragenter", "dragover"].forEach((eventName) => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ["dragleave", "drop"].forEach((eventName) => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        dropZone.classList.add("border-blue-500", "bg-blue-50");
+    }
+
+    function unhighlight(e) {
+        dropZone.classList.remove("border-blue-500", "bg-blue-50");
+    }
+
+    dropZone.addEventListener("drop", handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        fileInput.files = files;
+        updateUI();
+    }
+</script>
+{% endblock %}

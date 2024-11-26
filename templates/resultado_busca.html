@@ -1,0 +1,201 @@
+{% extends '_base.html' %} {% block content %}
+<div class="min-h-screen py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {% if colaborador %}
+    <!-- Card do Colaborador -->
+    <div
+      class="bg-white rounded-xl shadow-lg p-6 mb-6 transform transition-all duration-300 hover:shadow-xl"
+    >
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900">Espelho de Ponto</h2>
+          <p class="text-sm text-gray-500 mt-1">Período: {% now "F/Y" %}</p>
+        </div>
+        <div class="flex items-center space-x-3">
+          <span
+            class="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium"
+          >
+            Matrícula: {{ colaborador.matricula }}
+          </span>
+          {% if colaborador.cpf %}
+          <span
+            class="px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium"
+          >
+            CPF: {{ colaborador.cpf }}
+          </span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="text-sm font-medium text-gray-500">Nome</p>
+          <p class="mt-1 text-lg font-semibold text-gray-900">
+            {{ colaborador.nome }}
+          </p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="text-sm font-medium text-gray-500">Cargo</p>
+          <p class="mt-1 text-lg font-semibold text-gray-900">
+            {{ colaborador.cargo }}
+          </p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="text-sm font-medium text-gray-500">Turno</p>
+          <p class="mt-1 text-lg font-semibold text-gray-900">
+            {{ colaborador.turno }}
+          </p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="text-sm font-medium text-gray-500">Centro de Custo</p>
+          <p class="mt-1 text-lg font-semibold text-gray-900">
+            {{ colaborador.centro_custo }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visualizador de PDF -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+      <!-- Barra de Ferramentas do PDF -->
+      <div class="bg-gray-50 border-b border-gray-200 px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <!-- Controles de Zoom -->
+            <button
+              onclick="zoomOut()"
+              class="p-2 hover:bg-gray-200 rounded-lg"
+              title="Diminuir Zoom"
+            >
+              <i class="fas fa-search-minus"></i>
+            </button>
+            <button
+              onclick="zoomIn()"
+              class="p-2 hover:bg-gray-200 rounded-lg"
+              title="Aumentar Zoom"
+            >
+              <i class="fas fa-search-plus"></i>
+            </button>
+            <select
+              id="zoomLevel"
+              class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            >
+              <option value="0.5">50%</option>
+              <option value="0.75">75%</option>
+              <option value="1" selected>100%</option>
+              <option value="1.25">125%</option>
+              <option value="1.5">150%</option>
+              <option value="2">200%</option>
+            </select>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <button
+              onclick="window.print()"
+              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            >
+              <i class="fas fa-print mr-2"></i>
+              Imprimir
+            </button>
+            <a
+              href="{{ pdf_url }}"
+              download
+              class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+            >
+              <i class="fas fa-download mr-2"></i>
+              Download
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Container do PDF -->
+      <div class="relative bg-gray-100" style="height: calc(100vh - 300px)">
+        <!-- Debug info -->
+        {% if debug %}
+        <div class="p-4 bg-yellow-100 text-yellow-800">
+          <p>PDF URL: {{ pdf_url }}</p>
+          <p>Debug Path: {{ debug_path }}</p>
+        </div>
+        {% endif %}
+
+        <!-- PDF Viewer -->
+        <object
+          data="{{ pdf_url }}"
+          type="application/pdf"
+          class="absolute inset-0 w-full h-full"
+        >
+          <iframe
+            src="{{ pdf_url }}"
+            class="absolute inset-0 w-full h-full"
+            frameborder="0"
+          >
+            <p>
+              Este navegador não suporta a visualização de PDF.
+              <a href="{{ pdf_url }}" class="text-blue-600 hover:underline"
+                >Clique aqui para baixar o PDF</a
+              >
+            </p>
+          </iframe>
+        </object>
+      </div>
+    </div>
+
+    <!-- Informações do Documento -->
+    <div class="mt-6 bg-white rounded-lg shadow p-4 text-center">
+      <p class="text-sm text-gray-600">
+        <i class="far fa-clock mr-2"></i>
+        Documento gerado em {{ now|date:"d/m/Y H:i" }}
+      </p>
+      <p class="mt-2 text-sm text-gray-600">
+        <i class="far fa-question-circle mr-2"></i>
+        Em caso de dúvidas, entre em contato com o RH
+      </p>
+    </div>
+
+    {% endif %} {% if erro %}
+    <div class="rounded-xl bg-red-50 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <i class="fas fa-exclamation-circle text-red-400 text-xl"></i>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">Erro na busca</h3>
+          <p class="mt-2 text-sm text-red-700">{{ erro }}</p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const iframe = document.getElementById("pdfViewer");
+    const zoomSelect = document.getElementById("zoomLevel");
+
+    function setZoom(level) {
+      iframe.style.transform = `scale(${level})`;
+      iframe.style.transformOrigin = "top left";
+    }
+
+    window.zoomIn = function () {
+      const currentZoom = parseFloat(zoomSelect.value);
+      const newZoom = Math.min(currentZoom + 0.25, 2);
+      zoomSelect.value = newZoom;
+      setZoom(newZoom);
+    };
+
+    window.zoomOut = function () {
+      const currentZoom = parseFloat(zoomSelect.value);
+      const newZoom = Math.max(currentZoom - 0.25, 0.5);
+      zoomSelect.value = newZoom;
+      setZoom(newZoom);
+    };
+
+    zoomSelect.addEventListener("change", function () {
+      setZoom(this.value);
+    });
+  });
+</script>
+{% endblock %}
