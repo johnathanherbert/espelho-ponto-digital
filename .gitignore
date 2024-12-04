@@ -61,3 +61,4 @@ node_modules
 venv
 staticfiles
 media
+.env
