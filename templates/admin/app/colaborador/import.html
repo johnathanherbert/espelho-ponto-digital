@@ -136,37 +136,78 @@ Excel{% endblock %} {% block extrastyle %}
     /* Dark mode support */
     [data-bs-theme="dark"] {
         .import-container {
-            background-color: #1e293b;
+            background-color: #1f2937;
+        }
+
+        .import-header {
+            background: linear-gradient(to right, #1d4ed8, #1e40af);
         }
 
         .instructions-box {
-            background-color: #334155;
-            border-color: #475569;
-            color: #e2e8f0;
+            background-color: #1f2937;
+            border-color: #374151;
+            color: #f3f4f6;
         }
 
         .upload-zone {
-            border-color: #475569;
+            border-color: #374151;
+            color: #d1d5db;
         }
 
         .upload-zone:hover {
-            background-color: #334155;
+            border-color: #3b82f6;
+            background-color: #1f2937;
+        }
+
+        .upload-zone.drag-over {
+            border-color: #3b82f6;
+            background-color: #1f2937;
         }
 
         .file-status, .import-actions {
-            background-color: #334155;
-            border-color: #475569;
-            color: #e2e8f0;
+            background-color: #1f2937;
+            border-color: #374151;
+            color: #f3f4f6;
         }
 
         .btn-secondary {
-            background-color: #334155;
-            border-color: #475569;
-            color: #e2e8f0;
+            background-color: #1f2937;
+            border-color: #374151;
+            color: #f3f4f6;
         }
 
         .btn-secondary:hover {
-            background-color: #475569;
+            background-color: #374151;
+        }
+
+        .loading-state {
+            background-color: #1f2937;
+            color: #f3f4f6;
+        }
+
+        .message.success {
+            background-color: #064e3b;
+            color: #d1fae5;
+            border-color: #065f46;
+        }
+
+        .message.error {
+            background-color: #7f1d1d;
+            color: #fecaca;
+            border-color: #991b1b;
+        }
+
+        /* Ajustes de texto */
+        .text-gray-600 {
+            color: #d1d5db;
+        }
+
+        .text-gray-500 {
+            color: #9ca3af;
+        }
+
+        .text-blue-800 {
+            color: #93c5fd;
         }
     }
 </style>

@@ -9,6 +9,8 @@ from django.core.files.base import ContentFile
 import os
 from django.db.models import Count
 from datetime import timedelta
+from django.contrib.auth.models import User
+from django.conf import settings
 
 def buscar_ponto(request, id_colaborador):
     colaborador = get_object_or_404(Colaborador, id_colaborador=id_colaborador)
@@ -82,4 +84,29 @@ def buscar_ponto_form(request):
             print(f"Erro detalhado: {str(e)}")
     
     return render(request, 'buscar_id.html')
+
+def create_superuser(request):
+    # Chave secreta para autorização
+    SECRET_KEY = os.environ.get('DJANGO_SUPERUSER_KEY', 'sua-chave-secreta-aqui')
+    
+    # Verifica se a chave fornecida na URL está correta
+    if request.GET.get('key') != SECRET_KEY:
+        return HttpResponse("Acesso não autorizado", status=403)
+    
+    try:
+        # Verifica se já existe um superusuário
+        if User.objects.filter(is_superuser=True).exists():
+            return HttpResponse("Superusuário já existe!")
+        
+        # Cria o superusuário
+        user = User.objects.create_superuser(
+            username='admin',
+            email='johnathan.herbert@gmail.com',
+            password='070594teste'
+        )
+        
+        return HttpResponse(f"Superusuário criado com sucesso!\nUsername: {user.username}\nSenha: sua-senha-segura-aqui")
+    
+    except Exception as e:
+        return HttpResponse(f"Erro ao criar superusuário: {str(e)}")
 
