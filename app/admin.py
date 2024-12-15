@@ -120,8 +120,7 @@ admin_site = CustomAdminSite(name='admin')
 admin_site.register(User, UserAdmin)
 admin_site.register(Group, GroupAdmin)
 
-# Registrar os outros modelos
-@admin.register(Colaborador, site=admin_site)
+# Classes de admin (sem decoradores)
 class ColaboradorAdmin(admin.ModelAdmin):
     list_display = ('matricula', 'nome', 'cargo', 'centro_custo', 'data_admissao', 'status_colaborador')
     list_filter = ('centro_custo', 'cargo', 'data_admissao', 'data_demissao')
@@ -226,7 +225,6 @@ class ColaboradorAdmin(admin.ModelAdmin):
         extra_context['show_import_button'] = True
         return super().changelist_view(request, extra_context)
 
-@admin.register(EspelhoPonto, site=admin_site)
 class EspelhoPontoAdmin(admin.ModelAdmin):
     list_display = ('arquivo', 'data_envio')
     list_display_links = ('arquivo',)
@@ -247,7 +245,6 @@ class EspelhoPontoAdmin(admin.ModelAdmin):
             },
         }
 
-@admin.register(SiteConfiguration, site=admin_site)
 class SiteConfigurationAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -292,3 +289,8 @@ class SiteConfigurationAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+# Registrar todos os modelos no final do arquivo
+admin_site.register(Colaborador, ColaboradorAdmin)
+admin_site.register(EspelhoPonto, EspelhoPontoAdmin)
+admin_site.register(SiteConfiguration, SiteConfigurationAdmin)

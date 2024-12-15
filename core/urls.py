@@ -6,7 +6,7 @@ from app.admin import admin_site
 from app.views import create_superuser, serve_pdf
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin_site.urls),
     path('', include('app.urls')),
     path('createauser/', create_superuser, name='create_superuser'),
     re_path(r'^media/(?P<path>.*)$', serve_pdf),
