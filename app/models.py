@@ -6,15 +6,69 @@ from .widgets import ColorPickerWidget
 
 
 class Colaborador(models.Model):
+    # Dados Básicos
     matricula = models.CharField('Matrícula', max_length=20, unique=True)
     nome = models.CharField('Nome', max_length=200)
-    data_admissao = models.DateField('Data de Admissão', null=True, blank=True)
+    
+    # Documentos
     cpf = models.CharField('CPF', max_length=14, null=True, blank=True)
     pis = models.CharField('PIS', max_length=14, null=True, blank=True)
-    cargo = models.CharField('Cargo', max_length=100)
-    turno = models.CharField('Turno', max_length=100)
-    centro_custo = models.CharField('Centro de Custo', max_length=100)
+    
+    # Dados Funcionais
+    data_admissao = models.DateField('Data de Admissão', null=True, blank=True)
     data_demissao = models.DateField('Data de Demissão', null=True, blank=True)
+    cargo = models.CharField('Cargo', max_length=200)  # Aumentei para 200 devido aos cargos longos
+    
+    # Informações Organizacionais
+    TURNOS_CHOICES = [
+        ('1T', 'MUSASHI - 1 TURNO - 07:00 as 15:05 - Segunda-Feira à Sábado'),
+        ('2T', 'MUSASHI - 2 TURNO - 14:50 as 22:48 - Segunda-Feira à Sábado'),
+        ('RD', 'REVEZAMENTO 1 (DIURNO) - 07:00 as 19:00 (1x1)'),
+        ('RN', 'REVEZAMENTO 2 (NOTURNO) - 19:00 as 07:00 (1x1)'),
+    ]
+    
+    turno = models.CharField(
+        'Turno', 
+        max_length=200,  # Aumentei devido aos turnos longos
+        choices=TURNOS_CHOICES
+    )
+    
+    equipe = models.CharField(
+        'Equipe', 
+        max_length=100, 
+        default='MUSASHI'
+    )
+    
+    centro_custo = models.CharField(
+        'Centro de Custo', 
+        max_length=100,
+        default='MUSASHI - MANAUS'
+    )
+
+    def clean(self):
+        # Remove espaços extras do nome
+        if self.nome:
+            self.nome = self.nome.strip().upper()
+        
+        # Formatação do CPF
+        if self.cpf:
+            cpf_limpo = ''.join(filter(str.isdigit, self.cpf))
+            if len(cpf_limpo) == 11:
+                self.cpf = f"{cpf_limpo[:3]}.{cpf_limpo[3:6]}.{cpf_limpo[6:9]}-{cpf_limpo[9:]}"
+            else:
+                raise ValidationError({'cpf': 'CPF deve conter 11 dígitos'})
+
+        # Formatação do PIS
+        if self.pis:
+            pis_limpo = ''.join(filter(str.isdigit, self.pis))
+            if len(pis_limpo) == 11:
+                self.pis = f"{pis_limpo[:3]}.{pis_limpo[3:8]}.{pis_limpo[8:10]}-{pis_limpo[10]}"
+            else:
+                raise ValidationError({'pis': 'PIS deve conter 11 dígitos'})
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.matricula} - {self.nome}"

@@ -1,10 +1,22 @@
+<style>
+  :root {
+    --primary-color: #7E57C2;     /* Lilás principal */
+    --secondary-color: #4527A0;   /* Lilás mais escuro para gradientes */
+    --background-color: #FFFFFF;  /* Branco para fundos */
+    --text-color: #2C1810;       /* Marrom escuro para textos */
+    --link-color: #9575CD;       /* Lilás mais claro para links */
+}
+</style>
+
 {% extends '_base.html' %} {% block content %}
 <div
-  class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
+  class="min-h-screen"
+  style="background: linear-gradient(to bottom, var(--background-color), {{ site_config.background_color|default:'#F3F4F6' }})"
 >
   <!-- Hero Section -->
   <div
-    class="relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-800 dark:to-blue-900"
+    class="relative overflow-hidden"
+    style="background: linear-gradient(to right, var(--primary-color), var(--secondary-color))"
   >
     <!-- Decorative elements -->
     <div class="absolute inset-0">
@@ -23,7 +35,7 @@
         >
           Espelho de Ponto Digital
         </h1>
-        <p class="text-xl text-blue-100 max-w-2xl mx-auto">
+        <p class="text-xl max-w-2xl mx-auto" style="color: rgba(255, 255, 255, 0.9);">
           Acesse seu espelho de ponto de forma rápida e segura
         </p>
       </div>
@@ -35,7 +47,8 @@
     <div class="max-w-md mx-auto">
       <!-- Search Card -->
       <div
-        class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 backdrop-blur-xl backdrop-filter mb-8 border border-gray-100 dark:border-gray-700 transform transition-all duration-200"
+        class="bg-white rounded-2xl shadow-xl p-8 backdrop-blur-xl backdrop-filter mb-8 border border-gray-100 transform transition-all duration-200"
+        style="background-color: var(--background-color)"
       >
         <form
           method="post"
@@ -46,7 +59,8 @@
           <div class="space-y-2">
             <label
               for="matricula"
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              class="block text-sm font-medium"
+              style="color: var(--text-color)"
             >
               Matrícula
             </label>
@@ -55,7 +69,8 @@
               name="matricula"
               id="matricula"
               required
-              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:border-transparent"
+              style="background-color: white; color: var(--text-color)"
               placeholder="Digite sua matrícula"
             />
           </div>
@@ -63,7 +78,8 @@
           <div class="space-y-2">
             <label
               for="cpf"
-              class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              class="block text-sm font-medium"
+              style="color: var(--text-color)"
             >
               CPF
             </label>
@@ -73,14 +89,16 @@
               id="cpf"
               required
               maxlength="14"
-              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:border-transparent"
+              style="background-color: white; color: var(--text-color)"
               placeholder="000.000.000-00"
             />
           </div>
 
           <button
             type="submit"
-            class="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+            class="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+            style="background-color: var(--primary-color)"
           >
             <svg
               class="w-5 h-5 mr-2"
@@ -102,13 +120,16 @@
 
       <!-- Instructions Card -->
       <div
-        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-8 border border-gray-100 dark:border-gray-700"
+        class="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-gray-100"
+        style="background-color: var(--background-color)"
       >
         <h3
-          class="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center"
+          class="text-lg font-semibold mb-6 flex items-center"
+          style="color: var(--text-color)"
         >
           <svg
-            class="w-5 h-5 mr-2 text-blue-500"
+            class="w-5 h-5 mr-2"
+            style="color: var(--primary-color)"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -125,31 +146,34 @@
         <ul class="space-y-6">
           <li class="flex items-start">
             <span
-              class="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-sm font-semibold mr-4"
+              class="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full text-sm font-semibold mr-4"
+              style="background-color: var(--primary-color); opacity: 0.1; color: var(--primary-color)"
             >
               1
             </span>
-            <p class="text-gray-600 dark:text-gray-300 pt-1">
+            <p style="color: var(--text-color)" class="pt-1">
               Digite sua matrícula no primeiro campo
             </p>
           </li>
           <li class="flex items-start">
             <span
-              class="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-sm font-semibold mr-4"
+              class="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full text-sm font-semibold mr-4"
+              style="background-color: var(--primary-color); opacity: 0.1; color: var(--primary-color)"
             >
               2
             </span>
-            <p class="text-gray-600 dark:text-gray-300 pt-1">
+            <p style="color: var(--text-color)" class="pt-1">
               Informe seu CPF para validação
             </p>
           </li>
           <li class="flex items-start">
             <span
-              class="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-sm font-semibold mr-4"
+              class="flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-full text-sm font-semibold mr-4"
+              style="background-color: var(--primary-color); opacity: 0.1; color: var(--primary-color)"
             >
               3
             </span>
-            <p class="text-gray-600 dark:text-gray-300 pt-1">
+            <p style="color: var(--text-color)" class="pt-1">
               Clique em "Buscar Espelho de Ponto"
             </p>
           </li>
@@ -158,11 +182,12 @@
 
       <!-- Help Section -->
       <div class="text-center pb-8">
-        <p class="text-gray-600 dark:text-gray-400">
+        <p style="color: var(--text-color)">
           Precisa de ajuda?
           <a
             href="#"
-            class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium inline-flex items-center group"
+            style="color: var(--link-color)"
+            class="font-medium inline-flex items-center group hover:opacity-80"
           >
             Entre em contato com o RH
             <svg
@@ -213,15 +238,18 @@
 >
   <div class="fixed inset-0 bg-black/50 backdrop-blur-sm"></div>
   <div
-    class="relative bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full m-4 p-6 shadow-2xl"
+    class="relative rounded-2xl max-w-md w-full m-4 p-6 shadow-2xl"
+    style="background-color: var(--background-color)"
   >
     {% for message in messages %}
     <div class="text-center">
       <div
-        class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 mb-4"
+        class="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4"
+        style="background-color: var(--primary-color); opacity: 0.1"
       >
         <svg
-          class="h-6 w-6 text-red-600 dark:text-red-300"
+          class="h-6 w-6"
+          style="color: var(--primary-color)"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -234,16 +262,17 @@
           />
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+      <h3 class="text-lg font-medium mb-2" style="color: var(--text-color)">
         Erro na Busca
       </h3>
-      <p class="text-gray-500 dark:text-gray-400">{{ message }}</p>
+      <p style="color: var(--text-color); opacity: 0.8">{{ message }}</p>
     </div>
     {% endfor %}
     <div class="mt-5">
       <button
         @click="show = false"
-        class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm transition-colors duration-200"
+        class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm transition-colors duration-200"
+        style="background-color: var(--primary-color)"
       >
         Fechar
       </button>

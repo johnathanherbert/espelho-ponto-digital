@@ -1,0 +1,24 @@
+/* Força modo light no admin */
+:root {
+  color-scheme: light;
+}
+
+/* Reseta cores específicas do admin */
+body {
+  background-color: #fff;
+  color: #000;
+}
+
+/* Força cores claras nos elementos do admin */
+.dashboard #content {
+  background: #fff;
+}
+
+#header {
+  background: #fff;
+  color: #000;
+}
+
+.module h2, .module caption {
+  background: #f8f9fa;
+} 

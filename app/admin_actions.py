@@ -5,67 +5,78 @@ from .models import Colaborador
 
 def importar_excel(modeladmin, request, arquivo):
     try:
-        # Lê o arquivo Excel
-        df = pd.read_excel(arquivo)
-        print("Colunas encontradas:", df.columns.tolist())  # Debug
+        # Lê o arquivo Excel, pulando as duas primeiras linhas que são cabeçalho
+        df = pd.read_excel(arquivo, skiprows=2)
         
-        # Função para converter data
+        # Normaliza os nomes das colunas
+        df.columns = df.columns.str.strip()
+        
+        # Mapeamento de colunas
+        mapeamento_colunas = {
+            'Matrícula': 'Matrícula',
+            'Nome': 'Nome',
+            'Data de admissão': 'Data de admissão',
+            'CPF': 'CPF',
+            'PIS': 'PIS',
+            'Cargo': 'Cargo',
+            'Equipe': 'Equipe',
+            'Turno': 'Turno',
+            'Centro de custo': 'Centro de custo'
+        }
+        
+        # Renomeia as colunas conforme o mapeamento
+        df = df.rename(columns=lambda x: mapeamento_colunas.get(x, x))
+        
+        # Remove linhas vazias
+        df = df.dropna(subset=['Matrícula'])
+        
+        # Mapeamento dos dias da semana em português para inglês
+        dias_semana = {
+            'Seg': 'Mon',
+            'Ter': 'Tue',
+            'Qua': 'Wed',
+            'Qui': 'Thu',
+            'Sex': 'Fri',
+            'Sab': 'Sat',
+            'Dom': 'Sun'
+        }
+        
+        # Converte as datas do formato brasileiro para o formato do pandas
         def converter_data(data_str):
-            if pd.isna(data_str):
-                return None
-            try:
-                data_limpa = data_str.split(',')[-1].strip()
-                return pd.to_datetime(data_limpa, format='%d/%m/%Y').date()
-            except Exception as e:
-                print(f"Erro ao converter data: {data_str} - {str(e)}")
-                return None
-
-        # Criar ou atualizar registros
-        registros_atualizados = 0
+            for pt, en in dias_semana.items():
+                data_str = data_str.replace(pt, en)
+            return pd.to_datetime(data_str, format='%a, %d/%m/%Y')
+        
+        # Aplica a conversão na coluna de data
+        df['Data de admissão'] = df['Data de admissão'].apply(converter_data)
+        
         registros_criados = 0
+        registros_atualizados = 0
         erros = []
         
         for index, row in df.iterrows():
             try:
-                # Debug dos valores originais
-                print(f"\nLinha {index + 2}:")
-                print(f"CPF original: '{row['CPF']}'")
-                print(f"PIS original: '{row['PIS']}'")
-
-                dados = {
-                    'matricula': str(row['Matrícula']).strip(),
-                    'nome': str(row['Nome']).strip(),
-                    'cpf': str(row['CPF']).strip() if pd.notna(row['CPF']) else None,
-                    'pis': str(row['PIS']).strip() if pd.notna(row['PIS']) else None,
-                    'cargo': str(row['Cargo']).strip(),
-                    'turno': str(row['Turno']).strip(),
-                    'centro_custo': str(row['Centro de custo']).strip(),
-                    'data_admissao': converter_data(row['Data de admissão'])
-                }
-
-                # Adicionar data_demissao se existir
-                if 'Data de demissão' in row and pd.notna(row['Data de demissão']):
-                    dados['data_demissao'] = converter_data(row['Data de demissão'])
-
-                # Debug dos dados a serem salvos
-                print("Dados a serem salvos:", dados)
-                
                 colaborador, created = Colaborador.objects.update_or_create(
-                    matricula=dados['matricula'],
-                    defaults={k: v for k, v in dados.items() if k != 'matricula'}
+                    matricula=str(int(row['Matrícula'])),
+                    defaults={
+                        'nome': row['Nome'],
+                        'data_admissao': row['Data de admissão'],
+                        'cpf': row['CPF'],
+                        'pis': row['PIS'],
+                        'cargo': row['Cargo'],
+                        'turno': row['Turno'],
+                        'centro_custo': row['Centro de custo']
+                    }
                 )
-                
                 if created:
                     registros_criados += 1
                 else:
                     registros_atualizados += 1
                     
             except Exception as e:
-                erro_msg = f"Erro na linha {index + 2}: {str(e)}"
-                print(erro_msg)  # Debug
+                erro_msg = f"Erro na linha {index + 3}: {str(e)}"  # +3 porque pulamos 2 linhas
                 erros.append(erro_msg)
         
-        # Mensagens de feedback
         if registros_criados > 0 or registros_atualizados > 0:
             messages.success(
                 request, 
@@ -79,5 +90,4 @@ def importar_excel(modeladmin, request, arquivo):
             )
             
     except Exception as e:
-        print(f"Erro na importação: {str(e)}")  # Debug
         messages.error(request, f'Erro ao importar arquivo: {str(e)}')

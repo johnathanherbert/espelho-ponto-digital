@@ -13,11 +13,11 @@
 
     <style>
       :root {
-        --primary-color: {{ site_config.primary_color|default:"#3B82F6" }};
-        --secondary-color: {{ site_config.secondary_color|default:"#1D4ED8" }};
-        --background-color: {{ site_config.background_color|default:"#F3F4F6" }};
-        --text-color: {{ site_config.text_color|default:"#111827" }};
-        --link-color: {{ site_config.link_color|default:"#2563EB" }};
+        --primary-color: #7E57C2;     /* Lilás principal */
+        --secondary-color: #4527A0;   /* Lilás mais escuro */
+        --background-color: #FFFFFF;  /* Branco */
+        --text-color: #2C1810;       /* Marrom escuro */
+        --link-color: #9575CD;       /* Lilás mais claro */
       }
     </style>
 
@@ -58,9 +58,12 @@
             <a href="/" class="text-white hover:text-gray-200 transition-colors duration-200 font-medium">
               Início
             </a>
-            <a href="/#como-usar" class="text-white hover:text-gray-200 transition-colors duration-200 font-medium">
+            <button 
+              onclick="showHowToUsePopup()"
+              class="text-white hover:text-gray-200 transition-colors duration-200 font-medium cursor-pointer"
+            >
               Como Usar
-            </a>
+            </button>
             {% if site_config.contact_email %}
             <a href="mailto:{{ site_config.contact_email }}" class="text-white hover:text-gray-200 transition-colors duration-200 font-medium">
               Contato
@@ -107,45 +110,64 @@
     {% block content %}{% endblock %}
 
     <!-- Footer -->
-    <footer class="mt-auto py-6 bg-[var(--secondary-color)] text-white">
-      <div class="container mx-auto px-4 text-center">
-        {{ site_config.footer_text|safe }}
+    <footer class="mt-auto py-4 bg-[var(--primary-color)] text-white">
+      <div class="container mx-auto px-4">
+        <div class="text-center text-sm space-y-2">
+          <div class="flex items-center justify-center space-x-4">
+            <span class="opacity-75">Espelho de Ponto Digital © 2024</span>
+            <span class="opacity-75">•</span>
+            <a 
+              href="https://github.com/johnathanherbert" 
+              target="_blank" 
+              class="hover:text-gray-200 transition-colors opacity-75"
+            >
+              Desenvolvido por Johnathan Herbert
+            </a>
+            <span class="opacity-75">•</span>
+            <a 
+              href="mailto:johnathan.herbert47@gmail.com" 
+              class="hover:text-gray-200 transition-colors opacity-75"
+            >
+              Suporte
+            </a>
+          </div>
 
-        {% if site_config.contact_email or site_config.contact_phone %}
-        <div class="mt-4">
-          {% if site_config.contact_email %}
-          <a href="mailto:{{ site_config.contact_email }}" class="text-white hover:text-gray-200 mx-2">
-            {{ site_config.contact_email }}
-          </a>
+          {% if site_config.contact_email or site_config.contact_phone %}
+          <div class="flex items-center justify-center space-x-4 opacity-75">
+            {% if site_config.contact_email %}
+            <a href="mailto:{{ site_config.contact_email }}" class="hover:text-gray-200 transition-colors">
+              {{ site_config.contact_email }}
+            </a>
+            {% endif %}
+            
+            {% if site_config.contact_phone %}
+            <span>{{ site_config.contact_phone }}</span>
+            {% endif %}
+          </div>
           {% endif %}
-          
-          {% if site_config.contact_phone %}
-          <span class="text-white mx-2">{{ site_config.contact_phone }}</span>
+
+          {% if site_config.facebook_url or site_config.instagram_url or site_config.linkedin_url %}
+          <div class="flex justify-center space-x-4">
+            {% if site_config.facebook_url %}
+            <a href="{{ site_config.facebook_url }}" target="_blank" rel="noopener" class="text-white opacity-75 hover:text-gray-200 hover:opacity-100 transition-colors">
+              <i class="fab fa-facebook"></i>
+            </a>
+            {% endif %}
+            
+            {% if site_config.instagram_url %}
+            <a href="{{ site_config.instagram_url }}" target="_blank" rel="noopener" class="text-white opacity-75 hover:text-gray-200 hover:opacity-100 transition-colors">
+              <i class="fab fa-instagram"></i>
+            </a>
+            {% endif %}
+            
+            {% if site_config.linkedin_url %}
+            <a href="{{ site_config.linkedin_url }}" target="_blank" rel="noopener" class="text-white opacity-75 hover:text-gray-200 hover:opacity-100 transition-colors">
+              <i class="fab fa-linkedin"></i>
+            </a>
+            {% endif %}
+          </div>
           {% endif %}
         </div>
-        {% endif %}
-
-        {% if site_config.facebook_url or site_config.instagram_url or site_config.linkedin_url %}
-        <div class="mt-4 flex justify-center space-x-4">
-          {% if site_config.facebook_url %}
-          <a href="{{ site_config.facebook_url }}" target="_blank" rel="noopener" class="text-white hover:text-gray-200">
-            <i class="fab fa-facebook"></i>
-          </a>
-          {% endif %}
-          
-          {% if site_config.instagram_url %}
-          <a href="{{ site_config.instagram_url }}" target="_blank" rel="noopener" class="text-white hover:text-gray-200">
-            <i class="fab fa-instagram"></i>
-          </a>
-          {% endif %}
-          
-          {% if site_config.linkedin_url %}
-          <a href="{{ site_config.linkedin_url }}" target="_blank" rel="noopener" class="text-white hover:text-gray-200">
-            <i class="fab fa-linkedin"></i>
-          </a>
-          {% endif %}
-        </div>
-        {% endif %}
       </div>
     </footer>
 
@@ -169,6 +191,53 @@
           document.getElementById('mobile-menu').classList.add('hidden');
         }
       });
+
+      // Funções do popup
+      function showHowToUsePopup() {
+        const popup = document.getElementById('howToUsePopup');
+        popup.classList.remove('hidden');
+        popup.classList.add('flex');
+      }
+
+      function closeHowToUsePopup() {
+        const popup = document.getElementById('howToUsePopup');
+        popup.classList.remove('flex');
+        popup.classList.add('hidden');
+      }
+
+      // Fecha o popup ao clicar fora dele
+      document.getElementById('howToUsePopup').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeHowToUsePopup();
+        }
+      });
     </script>
+
+    <!-- Popup Como Usar -->
+    <div 
+      id="howToUsePopup" 
+      class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
+    >
+      <div class="bg-white rounded-xl shadow-xl p-6 max-w-md mx-4 relative">
+        <button 
+          onclick="closeHowToUsePopup()" 
+          class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="text-center">
+          <div class="w-16 h-16 bg-[var(--primary-color)] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-tools text-[var(--primary-color)] text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-2" style="color: var(--text-color)">
+            Em Desenvolvimento
+          </h3>
+          <p class="text-gray-600">
+            Esta funcionalidade está sendo desenvolvida e estará disponível em breve.
+          </p>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

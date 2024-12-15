@@ -5,6 +5,7 @@ module.exports = {
     "./static/src/**/*.js",
     "./**/*.py"  // para templates Django
   ],
+  darkMode: 'class',
   theme: {
     extend: {},
   },

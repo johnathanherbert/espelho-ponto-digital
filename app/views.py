@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from django.contrib import messages
 from django.utils import timezone
 from .models import Colaborador, EspelhoPonto, PontoForm
@@ -11,6 +11,8 @@ from django.db.models import Count
 from datetime import timedelta
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.views.static import serve
+import mimetypes
 
 def buscar_ponto(request, id_colaborador):
     colaborador = get_object_or_404(Colaborador, id_colaborador=id_colaborador)
@@ -18,24 +20,36 @@ def buscar_ponto(request, id_colaborador):
         espelho = EspelhoPonto.objects.latest('data_envio')
         
         if not espelho.arquivo:
-            return HttpResponse("Arquivo PDF não encontrado.", status=404)
+            messages.error(request, "Arquivo PDF não encontrado.")
+            return render(request, 'buscar_id.html')
             
         pdf_extracao = extrair_pagina_por_nome(espelho.arquivo.path, colaborador.nome)
         
         if pdf_extracao:
-            response = HttpResponse(pdf_extracao, content_type='application/pdf')
-            response['Content-Disposition'] = f'inline; filename="{colaborador.nome}.pdf"'
-            return response
+            temp_path = f'temp_pdfs/{colaborador.nome}_{timezone.now().strftime("%Y%m%d_%H%M%S")}.pdf'
+            pdf_url = default_storage.save(temp_path, pdf_extracao)
+            
+            context = {
+                'colaborador': colaborador,
+                'pdf_url': default_storage.url(pdf_url),
+                'now': timezone.now(),
+                'espelho': espelho
+            }
+            return render(request, 'resultado_busca.html', context)
         else:
-            return HttpResponse(
-                f"Não foi possível encontrar o espelho de ponto para o colaborador: {colaborador.nome}. "
-                "Verifique se o nome está exatamente igual ao que consta no PDF.", 
-                status=404
+            messages.error(
+                request, 
+                f"Não foi possível encontrar o espelho de ponto para {colaborador.nome}. "
+                "Verifique se o nome está exatamente igual ao que consta no PDF."
             )
+            return render(request, 'buscar_id.html')
+            
     except EspelhoPonto.DoesNotExist:
-        return HttpResponse("Nenhum arquivo PDF foi enviado ainda.", status=404)
+        messages.error(request, "Nenhum arquivo PDF foi enviado ainda.")
+        return render(request, 'buscar_id.html')
     except Exception as e:
-        return HttpResponse(f"Erro ao processar o PDF: {str(e)}", status=500)
+        messages.error(request, f"Erro ao processar o PDF: {str(e)}")
+        return render(request, 'buscar_id.html')
 
 def buscar_ponto_form(request):
     if request.method == 'POST':
@@ -50,40 +64,53 @@ def buscar_ponto_form(request):
                 messages.error(request, "Arquivo PDF não encontrado.")
                 return render(request, 'buscar_id.html')
             
-            print(f"\nBuscando espelho para:")
-            print(f"Nome: {colaborador.nome}")
-            print(f"Arquivo: {espelho.arquivo.path}")
-            
             pdf_extracao = extrair_pagina_por_nome(espelho.arquivo.path, colaborador.nome)
             
             if pdf_extracao:
-                temp_path = f'temp_pdfs/{colaborador.nome}_{timezone.now().strftime("%Y%m%d_%H%M%S")}.pdf'
+                # Cria o diretório temp_pdfs se não existir
+                temp_dir = os.path.join(settings.MEDIA_ROOT, 'temp_pdfs')
+                os.makedirs(temp_dir, exist_ok=True)
                 
-                pdf_url = default_storage.save(temp_path, pdf_extracao)
+                # Salva o arquivo temporário
+                temp_filename = f'{colaborador.nome}_{timezone.now().strftime("%Y%m%d_%H%M%S")}.pdf'
+                temp_path = os.path.join('temp_pdfs', temp_filename)
+                
+                # Salva usando default_storage
+                pdf_path = default_storage.save(temp_path, pdf_extracao)
+                full_path = os.path.join(settings.MEDIA_ROOT, pdf_path)
+                
+                # Configura a resposta com os cabeçalhos corretos
+                response = FileResponse(
+                    open(full_path, 'rb'),
+                    content_type='application/pdf'
+                )
+                response['Content-Disposition'] = f'inline; filename="{temp_filename}"'
+                response['X-Frame-Options'] = 'SAMEORIGIN'
                 
                 context = {
                     'colaborador': colaborador,
-                    'pdf_url': default_storage.url(pdf_url),
+                    'pdf_url': request.build_absolute_uri(settings.MEDIA_URL + pdf_path),
                     'now': timezone.now(),
-                    'espelho': espelho
+                    'espelho': espelho,
+                    'pdf_response': response,  # Adiciona a resposta ao contexto
                 }
+                
                 return render(request, 'resultado_busca.html', context)
             else:
-                messages.error(
-                    request, 
-                    f"Não foi possível encontrar o espelho de ponto para {colaborador.nome}. "
-                    "Verifique se o nome está exatamente igual ao que consta no PDF."
-                )
+                messages.error(request, f"Não foi possível encontrar o espelho de ponto para {colaborador.nome}")
                 
-        except Colaborador.DoesNotExist:
-            messages.error(request, "Matrícula ou CPF inválidos.")
-        except EspelhoPonto.DoesNotExist:
-            messages.error(request, "Nenhum arquivo de ponto foi enviado ainda.")
         except Exception as e:
             messages.error(request, f"Erro ao processar a solicitação: {str(e)}")
             print(f"Erro detalhado: {str(e)}")
     
     return render(request, 'buscar_id.html')
+
+# Adicione esta view para servir os PDFs
+def serve_pdf(request, path):
+    response = serve(request, path, document_root=settings.MEDIA_ROOT)
+    response['Content-Type'] = 'application/pdf'
+    response['X-Frame-Options'] = 'SAMEORIGIN'
+    return response
 
 def create_superuser(request):
     # Chave secreta para autorização

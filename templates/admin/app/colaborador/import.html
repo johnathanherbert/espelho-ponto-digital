@@ -12,7 +12,7 @@ Excel{% endblock %} {% block extrastyle %}
     .import-header {
         padding: 1.5rem;
         border-bottom: 1px solid #e5e7eb;
-        background: linear-gradient(to right, #2563eb, #1d4ed8);
+        background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
         border-radius: 1rem 1rem 0 0;
         color: white;
     }
@@ -68,7 +68,7 @@ Excel{% endblock %} {% block extrastyle %}
     }
 
     .btn-primary {
-        background-color: #2563eb;
+        background-color: var(--primary-color);
         color: white;
         padding: 0.75rem 1.5rem;
         border-radius: 0.5rem;
@@ -79,7 +79,7 @@ Excel{% endblock %} {% block extrastyle %}
     }
 
     .btn-primary:hover {
-        background-color: #1d4ed8;
+        background-color: var(--secondary-color);
         transform: translateY(-1px);
     }
 
@@ -140,7 +140,7 @@ Excel{% endblock %} {% block extrastyle %}
         }
 
         .import-header {
-            background: linear-gradient(to right, #1d4ed8, #1e40af);
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
         }
 
         .instructions-box {
@@ -207,7 +207,19 @@ Excel{% endblock %} {% block extrastyle %}
         }
 
         .text-blue-800 {
-            color: #93c5fd;
+            color: var(--secondary-color);
+        }
+
+        .text-blue-600 {
+            color: var(--primary-color);
+        }
+
+        .border-blue-500 {
+            border-color: var(--primary-color);
+        }
+
+        .bg-blue-50 {
+            background-color: rgba(126, 87, 194, 0.1);
         }
     }
 </style>

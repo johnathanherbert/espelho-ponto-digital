@@ -141,7 +141,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configurações de mídia para os arquivos PDF
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Configurações de arquivos estáticos
 STATIC_URL = '/static/'
@@ -225,7 +225,7 @@ JAZZMIN_SETTINGS = {
     # Customização do Dashboard
     "custom_css": "admin/css/custom_jazzmin.css",
     "custom_js": None,
-    "show_ui_builder": True,
+    "show_ui_builder": False,
     
     # Cards do Dashboard
     "changeform_format": "horizontal_tabs",
@@ -234,7 +234,7 @@ JAZZMIN_SETTINGS = {
         "auth.group": "vertical_tabs",
     },
     
-    # Configurações do usuário atualizadas
+    # Configurações do usuário
     "usermenu_links": [
         {
             "name": "Meu Perfil",
@@ -265,16 +265,21 @@ JAZZMIN_SETTINGS = {
     "show_footer": True,
     "copyright": "Espelho de Ponto Digital © 2024",
     "footer_links": [
-        {"name": "Desenvolvido por Sua Empresa", "url": "https://suaempresa.com.br"},
+        {
+            "name": "Desenvolvido por Johnathan Herbert", 
+            "url": "https://github.com/johnathanherbert",
+            "new_window": True
+        },
         {"name": "Versão 1.0", "url": "#"},
-        {"name": "Suporte", "url": "mailto:suporte@suaempresa.com.br"},
+        {"name": "Suporte", "url": "mailto:johnathan.herbert47@gmail.com"},
     ],
-    # Adicione isso para mostrar o menu do usuário
+    
+    # Configurações de UI
     "show_sidebar": True,
-    "show_ui_builder": True,
-    "show_ui_builder_icon": True,
-    "show_user_avatar": True,  # Mostra avatar do usuário
-    "user_avatar_field": "get_avatar_url",  # Campo para o avatar (opcional)
+    "show_ui_builder": False,
+    "show_ui_builder_icon": False,
+    "show_user_avatar": True,
+    "user_avatar_field": "get_avatar_url",
     
     # Customização do cabeçalho com usuário
     "navbar_small_text": False,
@@ -282,36 +287,23 @@ JAZZMIN_SETTINGS = {
     "body_small_text": False,
     "brand_small_text": False,
     
-    # Adicione suporte ao dark mode
-    "dark_mode_theme": "darkly",
-    "show_dark_mode_toggle": True,
-    
-    # Customização das cores para dark mode
-    "dark_mode_colors": {
-        "primary": "#3b82f6",
-        "secondary": "#64748b",
-        "success": "#22c55e",
-        "info": "#0ea5e9",
-        "warning": "#eab308",
-        "danger": "#ef4444",
-    },
+    # Forçar tema claro
+    "theme": "default",
+    "dark_mode_theme": None,
 }
 
 # Customização das Cores do Tema
 JAZZMIN_UI_TWEAKS = {
-    "navbar_small_text": False,
-    "footer_small_text": False,
-    "body_small_text": False,
-    "brand_small_text": False,
-    "brand_colour": False,
+    # Cores claras específicas
+    "navbar": "navbar-light",
+    "sidebar": "sidebar-light-primary",
+    "brand_colour": "navbar-primary",
     "accent": "accent-primary",
-    "navbar": "navbar-dark",
-    "no_navbar_border": True,
+    "no_navbar_border": False,
     "navbar_fixed": True,
     "layout_boxed": False,
     "footer_fixed": False,
     "sidebar_fixed": True,
-    "sidebar": "sidebar-light",
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": True,
@@ -319,10 +311,18 @@ JAZZMIN_UI_TWEAKS = {
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": False,
     
-    # Adicione suporte ao dark mode
-    "dark_mode_theme": True,
-    "theme": "default",
-    "dark_theme": "darkly",
+    # Cores personalizadas
+    "theme": "light",
+    "dark_mode_theme": None,
+    "custom_css": "admin/css/custom.css",  # CSS personalizado
+    "button_classes": {
+        "primary": "btn-outline-primary",
+        "secondary": "btn-outline-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success"
+    },
 }
 
 # Configuração para arquivos temporários
@@ -369,6 +369,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.railway.app',
+    'http://127.0.0.1:8000/'
     # adicione outros domínios conforme necessário
 ]
 
@@ -376,3 +377,15 @@ CORS_ALLOWED_ORIGINS = [
     'https://*.railway.app',
     # adicione outros domínios conforme necessário
 ]
+
+# Configuração de arquivos estáticos e mídia
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Habilitar compressão e caching
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Configurar WhiteNoise para servir arquivos de mídia também
+WHITENOISE_ROOT = MEDIA_ROOT

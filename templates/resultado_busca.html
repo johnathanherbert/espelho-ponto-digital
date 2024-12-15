@@ -4,74 +4,95 @@
     {% if colaborador %}
     <!-- Card do Colaborador -->
     <div
-      class="bg-white rounded-xl shadow-lg p-6 mb-6 transform transition-all duration-300 hover:shadow-xl"
+      class="rounded-2xl shadow-lg p-8 mb-8 transition-all duration-300 hover:shadow-xl"
+      style="background-color: white"
     >
-      <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center justify-between mb-8">
         <div>
-          <h2 class="text-2xl font-bold text-gray-900">Espelho de Ponto</h2>
-          <p class="text-sm text-gray-500 mt-1">Período: {% now "F/Y" %}</p>
+          <h2 class="text-2xl font-bold" style="color: var(--text-color)">
+            Espelho de Ponto - {{ colaborador.nome }}
+          </h2>
+          <p class="text-sm mt-1 opacity-60" style="color: var(--text-color)">
+            Período: {% now "F/Y" %}
+          </p>
+          <p class="text-sm mt-1" style="color: var(--text-color)">
+            Data de Geração: {% now "d/m/Y H:i" %}
+          </p>
         </div>
         <div class="flex items-center space-x-3">
           <span
-            class="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium"
+            class="px-4 py-2 rounded-xl text-sm font-medium"
+            style="background-color: var(--primary-color); color: white; opacity: 0.9"
           >
             Matrícula: {{ colaborador.matricula }}
           </span>
           {% if colaborador.cpf %}
           <span
-            class="px-4 py-2 bg-green-50 text-green-700 rounded-full text-sm font-medium"
+            class="px-4 py-2 rounded-xl text-sm font-medium"
+            style="background-color: var(--secondary-color); color: white; opacity: 0.9"
           >
-            CPF: {{ colaborador.cpf }}
+            CPF: {{ colaborador.cpf|slice:":3" }}.***.***-**
           </span>
           {% endif %}
         </div>
       </div>
 
+      <!-- Grid de Informações Adicionais -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-gray-50 rounded-lg p-4">
-          <p class="text-sm font-medium text-gray-500">Nome</p>
-          <p class="mt-1 text-lg font-semibold text-gray-900">
+        <div class="rounded-xl p-4" style="background-color: var(--background-color)">
+          <p class="text-sm font-medium opacity-60" style="color: var(--text-color)">
+            Nome Completo
+          </p>
+          <p class="mt-1 text-lg font-semibold" style="color: var(--text-color)">
             {{ colaborador.nome }}
           </p>
         </div>
-        <div class="bg-gray-50 rounded-lg p-4">
-          <p class="text-sm font-medium text-gray-500">Cargo</p>
-          <p class="mt-1 text-lg font-semibold text-gray-900">
-            {{ colaborador.cargo }}
+        <div class="rounded-xl p-4" style="background-color: var(--background-color)">
+          <p class="text-sm font-medium opacity-60" style="color: var(--text-color)">
+            Matrícula
+          </p>
+          <p class="mt-1 text-lg font-semibold" style="color: var(--text-color)">
+            {{ colaborador.matricula }}
           </p>
         </div>
-        <div class="bg-gray-50 rounded-lg p-4">
-          <p class="text-sm font-medium text-gray-500">Turno</p>
-          <p class="mt-1 text-lg font-semibold text-gray-900">
-            {{ colaborador.turno }}
+        <div class="rounded-xl p-4" style="background-color: var(--background-color)">
+          <p class="text-sm font-medium opacity-60" style="color: var(--text-color)">
+            Período do Relatório
+          </p>
+          <p class="mt-1 text-lg font-semibold" style="color: var(--text-color)">
+            {% now "F/Y" %}
           </p>
         </div>
-        <div class="bg-gray-50 rounded-lg p-4">
-          <p class="text-sm font-medium text-gray-500">Centro de Custo</p>
-          <p class="mt-1 text-lg font-semibold text-gray-900">
-            {{ colaborador.centro_custo }}
+        <div class="rounded-xl p-4" style="background-color: var(--background-color)">
+          <p class="text-sm font-medium opacity-60" style="color: var(--text-color)">
+            Data de Emissão
+          </p>
+          <p class="mt-1 text-lg font-semibold" style="color: var(--text-color)">
+            {% now "d/m/Y H:i" %}
           </p>
         </div>
       </div>
     </div>
 
     <!-- Visualizador de PDF -->
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-      <!-- Barra de Ferramentas do PDF -->
-      <div class="bg-gray-50 border-b border-gray-200 px-6 py-4">
+    <div class="rounded-2xl shadow-lg overflow-hidden" style="background-color: white">
+      <!-- Barra de Ferramentas -->
+      <div class="px-6 py-4 border-b" style="background-color: var(--background-color)">
         <div class="flex items-center justify-between">
+          <!-- Controles de Zoom -->
           <div class="flex items-center space-x-4">
-            <!-- Controles de Zoom -->
             <button
               onclick="zoomOut()"
-              class="p-2 hover:bg-gray-200 rounded-lg"
+              class="p-2 rounded-lg transition-all duration-200 hover:opacity-80"
+              style="color: var(--primary-color)"
               title="Diminuir Zoom"
             >
               <i class="fas fa-search-minus"></i>
             </button>
             <button
               onclick="zoomIn()"
-              class="p-2 hover:bg-gray-200 rounded-lg"
+              class="p-2 rounded-lg transition-all duration-200 hover:opacity-80"
+              style="color: var(--primary-color)"
               title="Aumentar Zoom"
             >
               <i class="fas fa-search-plus"></i>
@@ -89,10 +110,12 @@
             </select>
           </div>
 
+          <!-- Botões de Ação -->
           <div class="flex items-center space-x-4">
             <button
               onclick="window.print()"
-              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:opacity-90"
+              style="background-color: var(--background-color); color: var(--text-color)"
             >
               <i class="fas fa-print mr-2"></i>
               Imprimir
@@ -100,7 +123,8 @@
             <a
               href="{{ pdf_url }}"
               download
-              class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+              class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium text-white transition-all duration-200 hover:opacity-90"
+              style="background-color: var(--primary-color)"
             >
               <i class="fas fa-download mr-2"></i>
               Download
@@ -110,54 +134,57 @@
       </div>
 
       <!-- Container do PDF -->
-      <div class="relative bg-gray-100" style="height: calc(100vh - 300px)">
-        <!-- Debug info -->
-        {% if debug %}
-        <div class="p-4 bg-yellow-100 text-yellow-800">
-          <p>PDF URL: {{ pdf_url }}</p>
-          <p>Debug Path: {{ debug_path }}</p>
-        </div>
-        {% endif %}
-
-        <!-- PDF Viewer -->
-        <object
-          data="{{ pdf_url }}"
-          type="application/pdf"
-          class="absolute inset-0 w-full h-full"
-        >
-          <iframe
+      <div class="relative" style="height: calc(100vh - 300px); background-color: var(--background-color)">
+        {% if pdf_url %}
+          <!-- Primeira tentativa: usando iframe direto -->
+          <iframe 
             src="{{ pdf_url }}"
             class="absolute inset-0 w-full h-full"
-            frameborder="0"
+            type="application/pdf"
           >
-            <p>
-              Este navegador não suporta a visualização de PDF.
-              <a href="{{ pdf_url }}" class="text-blue-600 hover:underline"
-                >Clique aqui para baixar o PDF</a
-              >
-            </p>
+            <!-- Segunda tentativa: usando object como fallback -->
+            <object
+              data="{{ pdf_url }}"
+              type="application/pdf"
+              class="absolute inset-0 w-full h-full"
+            >
+              <!-- Terceira tentativa: link direto como último recurso -->
+              <p class="p-4">
+                Seu navegador não suporta a visualização de PDF.
+                <a 
+                  href="{{ pdf_url }}" 
+                  class="text-blue-600 hover:underline"
+                  target="_blank"
+                >
+                  Clique aqui para baixar o PDF
+                </a>
+              </p>
+            </object>
           </iframe>
-        </object>
+        {% else %}
+          <p class="p-4">Nenhum PDF disponível.</p>
+        {% endif %}
       </div>
     </div>
 
     <!-- Informações do Documento -->
-    <div class="mt-6 bg-white rounded-lg shadow p-4 text-center">
-      <p class="text-sm text-gray-600">
+    <div class="mt-6 rounded-xl shadow p-6 text-center" style="background-color: white">
+      <p class="text-sm opacity-60" style="color: var(--text-color)">
         <i class="far fa-clock mr-2"></i>
         Documento gerado em {{ now|date:"d/m/Y H:i" }}
       </p>
-      <p class="mt-2 text-sm text-gray-600">
+      <p class="mt-2 text-sm opacity-60" style="color: var(--text-color)">
         <i class="far fa-question-circle mr-2"></i>
         Em caso de dúvidas, entre em contato com o RH
       </p>
     </div>
+    {% endif %}
 
-    {% endif %} {% if erro %}
-    <div class="rounded-xl bg-red-50 p-4">
+    {% if erro %}
+    <div class="rounded-xl p-6 mt-8" style="background-color: #FEE2E2">
       <div class="flex">
         <div class="flex-shrink-0">
-          <i class="fas fa-exclamation-circle text-red-400 text-xl"></i>
+          <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
         </div>
         <div class="ml-3">
           <h3 class="text-sm font-medium text-red-800">Erro na busca</h3>
@@ -196,6 +223,37 @@
     zoomSelect.addEventListener("change", function () {
       setZoom(this.value);
     });
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(function() {
+      const pdfContainer = document.querySelector('.pdf-container');
+      if (pdfContainer) {
+        const pdfUrl = '{{ pdf_url }}';
+        pdfContainer.innerHTML = `
+          <object
+            data="${pdfUrl}"
+            type="application/pdf"
+            class="absolute inset-0 w-full h-full"
+          >
+            <iframe
+              src="${pdfUrl}"
+              class="absolute inset-0 w-full h-full"
+              frameborder="0"
+            >
+              <p>
+                Este navegador não suporta a visualização de PDF.
+                <a href="${pdfUrl}" class="text-blue-600 hover:underline"
+                  >Clique aqui para baixar o PDF</a
+                >
+              </p>
+            </iframe>
+          </object>
+        `;
+      }
+    }, 500); // 500ms de atraso
   });
 </script>
 {% endblock %}

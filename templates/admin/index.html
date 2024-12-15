@@ -3,8 +3,8 @@
   <!-- Cards de Métricas -->
   <div class="row">
     <div class="col-lg-3 col-6">
-      <div class="small-box bg-info">
-        <div class="inner">
+      <div class="small-box" style="background-color: var(--primary-color)">
+        <div class="inner" style="color: white">
           <h3>{{ colaboradores_ativos }}</h3>
           <p>Colaboradores Ativos</p>
         </div>
@@ -15,8 +15,8 @@
     </div>
 
     <div class="col-lg-3 col-6">
-      <div class="small-box bg-success">
-        <div class="inner">
+      <div class="small-box" style="background-color: var(--secondary-color)">
+        <div class="inner" style="color: white">
           <h3>{{ admitidos_mes }}</h3>
           <p>Admissões este mês</p>
         </div>
@@ -27,8 +27,8 @@
     </div>
 
     <div class="col-lg-3 col-6">
-      <div class="small-box bg-warning">
-        <div class="inner">
+      <div class="small-box" style="background-color: var(--primary-color); opacity: 0.9">
+        <div class="inner" style="color: white">
           <h3>{{ demitidos_mes }}</h3>
           <p>Demissões este mês</p>
         </div>
@@ -39,8 +39,8 @@
     </div>
 
     <div class="col-lg-3 col-6">
-      <div class="small-box bg-danger">
-        <div class="inner">
+      <div class="small-box" style="background-color: var(--secondary-color); opacity: 0.9">
+        <div class="inner" style="color: white">
           <h3>{{ total_colaboradores }}</h3>
           <p>Total de Colaboradores</p>
         </div>
@@ -55,9 +55,9 @@
   <div class="row">
     <!-- Admissões por Mês -->
     <div class="col-md-6">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Admissões por Mês</h3>
+      <div class="card" style="background-color: var(--background-color)">
+        <div class="card-header" style="border-bottom-color: rgba(0,0,0,0.1)">
+          <h3 class="card-title" style="color: var(--text-color)">Admissões por Mês</h3>
         </div>
         <div class="card-body">
           <canvas id="admissoesChart" height="300"></canvas>
@@ -67,9 +67,9 @@
 
     <!-- Status dos Colaboradores -->
     <div class="col-md-6">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Status dos Colaboradores</h3>
+      <div class="card" style="background-color: var(--background-color)">
+        <div class="card-header" style="border-bottom-color: rgba(0,0,0,0.1)">
+          <h3 class="card-title" style="color: var(--text-color)">Status dos Colaboradores</h3>
         </div>
         <div class="card-body">
           <canvas id="statusChart" height="300"></canvas>
@@ -81,9 +81,9 @@
   <div class="row">
     <!-- Colaboradores por Cargo -->
     <div class="col-md-6">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Top Cargos</h3>
+      <div class="card" style="background-color: var(--background-color)">
+        <div class="card-header" style="border-bottom-color: rgba(0,0,0,0.1)">
+          <h3 class="card-title" style="color: var(--text-color)">Top Cargos</h3>
         </div>
         <div class="card-body">
           <canvas id="cargosChart" height="300"></canvas>
@@ -93,9 +93,9 @@
 
     <!-- Colaboradores por Setor -->
     <div class="col-md-6">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Colaboradores por Setor</h3>
+      <div class="card" style="background-color: var(--background-color)">
+        <div class="card-header" style="border-bottom-color: rgba(0,0,0,0.1)">
+          <h3 class="card-title" style="color: var(--text-color)">Colaboradores por Setor</h3>
         </div>
         <div class="card-body">
           <canvas id="setoresChart" height="300"></canvas>
@@ -108,10 +108,22 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-      // Cores para os gráficos
+      // Pegar as cores do CSS
+      const primaryColor = getComputedStyle(document.documentElement)
+          .getPropertyValue('--primary-color').trim();
+      const secondaryColor = getComputedStyle(document.documentElement)
+          .getPropertyValue('--secondary-color').trim();
+      
+      // Cores para os gráficos usando as variáveis do site
       const colors = [
-          '#3B82F6', '#10B981', '#F59E0B', '#EF4444',
-          '#6366F1', '#8B5CF6', '#EC4899', '#14B8A6'
+          primaryColor,
+          secondaryColor,
+          primaryColor + '99',  // Com opacidade
+          secondaryColor + '99', // Com opacidade
+          primaryColor + '66',   // Com mais opacidade
+          secondaryColor + '66', // Com mais opacidade
+          primaryColor + '33',   // Com ainda mais opacidade
+          secondaryColor + '33'  // Com ainda mais opacidade
       ];
 
       // Gráfico de Admissões
@@ -122,7 +134,7 @@
               datasets: [{
                   label: 'Admissões',
                   data: {{ valores_admissoes|safe }},
-                  borderColor: colors[0],
+                  borderColor: primaryColor,
                   tension: 0.1,
                   fill: false
               }]
@@ -133,6 +145,10 @@
               plugins: {
                   legend: {
                       position: 'top',
+                      labels: {
+                          color: getComputedStyle(document.documentElement)
+                              .getPropertyValue('--text-color').trim()
+                      }
                   }
               }
           }
