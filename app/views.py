@@ -150,3 +150,12 @@ def create_superuser(request):
     except Exception as e:
         return HttpResponse(f"Erro ao criar superusuário: {str(e)}")
 
+def download_pdf(request, filename):
+    response = FileResponse(open(filename, 'rb'))
+    response['Content-Type'] = 'application/pdf'
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+    response['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
+

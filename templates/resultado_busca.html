@@ -52,14 +52,28 @@
                 <div class="rounded-lg overflow-hidden shadow-lg border border-gray-200">
                     <div class="bg-gray-50 border-b border-gray-200 px-3 py-2 flex justify-between items-center">
                         <span class="text-sm font-medium text-gray-700">Espelho de Ponto</span>
-                        <button onclick="requestPermissionAndDownload('{{ pdf_url }}', 'espelho_ponto_{{ colaborador.nome }}.pdf')"
-                                class="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                            </svg>
-                            Baixar PDF
-                        </button>
+                        <div class="flex gap-2">
+                            <!-- Botão de Download Direto -->
+                            <a href="{{ pdf_url }}" 
+                               download="espelho_ponto_{{ colaborador.nome }}.pdf"
+                               class="inline-flex items-center px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+                               onclick="return forceDownload(this, '{{ pdf_url }}', 'espelho_ponto_{{ colaborador.nome }}.pdf')">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                                </svg>
+                                Download Direto
+                            </a>
+                            <!-- Botão de Download com Permissão -->
+                            <button onclick="requestPermissionAndDownload('{{ pdf_url }}', 'espelho_ponto_{{ colaborador.nome }}.pdf')"
+                                    class="inline-flex items-center px-3 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                Download Seguro
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="p-8 text-center bg-gray-50">
@@ -98,68 +112,155 @@
 
 <!-- Scripts para gerenciar permissões -->
 <script>
-async function requestPermissionAndDownload(url, filename) {
-    try {
-        // Verifica se é um dispositivo móvel
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            // Solicita permissão para download
-            if (window.Notification && Notification.permission !== "granted") {
-                await Notification.requestPermission();
-            }
-        }
+// Detecta se é dispositivo móvel
+function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
 
-        // Tenta fazer o download
+// Função para forçar download
+async function forceDownload(link, url, filename) {
+    try {
         const response = await fetch(url);
         const blob = await response.blob();
-        const downloadUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = downloadUrl;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(downloadUrl);
-        document.body.removeChild(a);
-
-        // Notifica o usuário
-        if (Notification.permission === "granted") {
-            new Notification("Download Iniciado", {
-                body: "Seu arquivo está sendo baixado",
-                icon: "/static/images/icon.png" // Adicione um ícone se desejar
-            });
+        
+        if (isMobile()) {
+            try {
+                // Para iOS
+                if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        window.location.href = reader.result;
+                    };
+                    reader.readAsDataURL(blob);
+                } else {
+                    // Para Android
+                    const objectUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = objectUrl;
+                    a.download = filename;
+                    a.click();
+                    URL.revokeObjectURL(objectUrl);
+                }
+            } catch (mobileError) {
+                console.error('Erro mobile:', mobileError);
+                // Fallback para dispositivos móveis
+                window.location.href = url;
+            }
+        } else {
+            // Desktop
+            try {
+                const objectUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = objectUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                URL.revokeObjectURL(objectUrl);
+                document.body.removeChild(a);
+            } catch (desktopError) {
+                console.error('Erro desktop:', desktopError);
+                window.open(url, '_blank');
+            }
         }
+        return false;
     } catch (error) {
-        console.error('Erro ao baixar:', error);
-        alert('Houve um erro ao baixar o arquivo. Por favor, tente novamente.');
+        console.error('Erro geral:', error);
+        window.location.href = url;
+        return false;
     }
 }
 
-async function requestPermissionAndOpen(url) {
+// Função para download com permissão
+async function requestPermissionAndDownload(url, filename) {
     try {
-        // Verifica se é um dispositivo móvel
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            // Solicita permissão para abrir em nova aba
+        if (isMobile()) {
             if (window.Notification && Notification.permission !== "granted") {
                 await Notification.requestPermission();
             }
+
+            // Tenta abrir no app nativo primeiro
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                window.location.href = url;
+            } else {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const objectUrl = URL.createObjectURL(blob);
+                
+                // Tenta abrir no visualizador nativo do Android
+                const a = document.createElement('a');
+                a.href = objectUrl;
+                a.target = '_blank';
+                a.type = 'application/pdf';
+                a.click();
+                
+                setTimeout(() => URL.revokeObjectURL(objectUrl), 100);
+            }
+        } else {
+            await forceDownload(null, url, filename);
         }
 
-        // Abre em nova aba
-        window.open(url, '_blank');
-
-        // Notifica o usuário
         if (Notification.permission === "granted") {
-            new Notification("Arquivo Aberto", {
-                body: "O arquivo foi aberto em uma nova aba",
-                icon: "/static/images/icon.png" // Adicione um ícone se desejar
+            new Notification("Arquivo Pronto", {
+                body: "O arquivo está sendo processado pelo seu dispositivo",
+                icon: "/static/images/icon.png"
+            });
+        }
+    } catch (error) {
+        console.error('Erro no processamento:', error);
+        alert('Tentando método alternativo...');
+        window.location.href = url;
+    }
+}
+
+// Função para abrir em nova aba
+async function requestPermissionAndOpen(url) {
+    try {
+        if (isMobile()) {
+            if (window.Notification && Notification.permission !== "granted") {
+                await Notification.requestPermission();
+            }
+
+            // Tenta diferentes métodos para dispositivos móveis
+            try {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const objectUrl = URL.createObjectURL(blob);
+
+                if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                    window.location.href = objectUrl;
+                } else {
+                    // Para Android, tenta abrir no visualizador nativo
+                    const a = document.createElement('a');
+                    a.href = objectUrl;
+                    a.target = '_blank';
+                    a.type = 'application/pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
+
+                setTimeout(() => URL.revokeObjectURL(objectUrl), 100);
+            } catch (e) {
+                window.location.href = url;
+            }
+        } else {
+            window.open(url, '_blank');
+        }
+
+        if (Notification.permission === "granted") {
+            new Notification("Visualizando Arquivo", {
+                body: "O arquivo está sendo aberto no seu dispositivo",
+                icon: "/static/images/icon.png"
             });
         }
     } catch (error) {
         console.error('Erro ao abrir:', error);
-        alert('Houve um erro ao abrir o arquivo. Por favor, tente novamente.');
+        alert('Tentando método alternativo de visualização...');
+        window.location.href = url;
     }
 }
 
-// Solicita permissão assim que a página carrega
+// Inicialização
 document.addEventListener('DOMContentLoaded', () => {
     if (window.Notification && Notification.permission !== "granted") {
         Notification.requestPermission();
