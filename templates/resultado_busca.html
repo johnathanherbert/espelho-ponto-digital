@@ -4,22 +4,22 @@
         <!-- Card do Colaborador -->
         <div class="bg-purple-600 shadow-lg rounded-2xl overflow-hidden">
             <!-- Cabeçalho -->
-            <div class="p-8 bg-gradient-to-r from-purple-800 to-purple-900 shadow-lg">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div class="p-6 sm:p-8 bg-gradient-to-r from-purple-800 to-purple-900 shadow-lg">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h2 class="text-2xl sm:text-3xl font-bold text-purple-600 tracking-tight">
+                        <h2 class="text-xl sm:text-2xl font-bold text-purple-600 tracking-tight">
                             {{ colaborador.nome }}
                         </h2>
-                        <p class="text-purple-100 text-sm mt-2 font-medium">
+                        <p class="text-purple-100 text-sm mt-1 font-medium">
                             Espelho de Ponto - {% now "F/Y" %}
                         </p>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <span class="px-4 py-2 bg-purple-700/40 text-purple-900 rounded-lg text-sm font-medium backdrop-blur-sm border border-purple-500/20 shadow-sm">
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <span class="px-3 py-1.5 bg-purple-700/40 text-purple-900 rounded-lg text-sm font-medium backdrop-blur-sm border border-purple-500/20 shadow-sm">
                             Matrícula: {{ colaborador.matricula }}
                         </span>
                         {% if colaborador.cpf %}
-                        <span class="px-4 py-2 bg-purple-700/40 text-purple-900 rounded-lg text-sm font-medium backdrop-blur-sm border border-purple-500/20 shadow-sm">
+                        <span class="px-3 py-1.5 bg-purple-700/40 text-purple-900 rounded-lg text-sm font-medium backdrop-blur-sm border border-purple-500/20 shadow-sm">
                             CPF: {{ colaborador.cpf|slice:":3" }}.***.***-**
                         </span>
                         {% endif %}
@@ -28,61 +28,66 @@
             </div>
 
             <!-- Grid de informações -->
-            <div class="p-6 sm:p-8">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <p class="text-sm font-medium text-gray-500">Cargo</p>
-                        <p class="mt-1 font-semibold text-gray-900">{{ colaborador.cargo|default:"Não informado" }}</p>
+            <div class="p-4 sm:p-6">
+                <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                    <div class="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <p class="text-xs font-medium text-gray-500">Cargo</p>
+                        <p class="mt-0.5 font-medium text-sm text-gray-900">{{ colaborador.cargo|default:"Não informado" }}</p>
                     </div>
-                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <p class="text-sm font-medium text-gray-500">Centro de Custo</p>
-                        <p class="mt-1 font-semibold text-gray-900">{{ colaborador.centro_custo|default:"Não informado" }}</p>
+                    <div class="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <p class="text-xs font-medium text-gray-500">Centro de Custo</p>
+                        <p class="mt-0.5 font-medium text-sm text-gray-900">{{ colaborador.centro_custo|default:"Não informado" }}</p>
                     </div>
-                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <p class="text-sm font-medium text-gray-500">Data de Admissão</p>
-                        <p class="mt-1 font-semibold text-gray-900">{{ colaborador.data_admissao|date:"d/m/Y"|default:"Não informado" }}</p>
+                    <div class="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <p class="text-xs font-medium text-gray-500">Data de Admissão</p>
+                        <p class="mt-0.5 font-medium text-sm text-gray-900">{{ colaborador.data_admissao|date:"d/m/Y"|default:"Não informado" }}</p>
                     </div>
-                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                        <p class="text-sm font-medium text-gray-500">Turno</p>
-                        <p class="mt-1 font-semibold text-gray-900">{{ colaborador.turno|default:"Não informado" }}</p>
+                    <div class="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                        <p class="text-xs font-medium text-gray-500">Turno</p>
+                        <p class="mt-0.5 font-medium text-sm text-gray-900">{{ colaborador.turno|default:"Não informado" }}</p>
                     </div>
                 </div>
 
-                <!-- Visualizador de PDF -->
-                <div class="rounded-xl overflow-hidden shadow-lg border border-gray-200">
-                    <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 flex justify-between items-center">
+                <!-- Visualizador de PDF com fallback -->
+                <div class="rounded-lg overflow-hidden shadow-lg border border-gray-200">
+                    <div class="bg-gray-50 border-b border-gray-200 px-3 py-2 flex justify-between items-center">
                         <span class="text-sm font-medium text-gray-700">Espelho de Ponto</span>
                         <a href="{{ pdf_url }}" 
                            download="espelho_ponto_{{ colaborador.nome }}.pdf"
-                           class="inline-flex items-center text-sm text-blue-600 hover:text-blue-700">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           class="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                       d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                             </svg>
                             Baixar PDF
                         </a>
                     </div>
-                    <iframe
-                        src="{{ pdf_url }}"
-                        type="application/pdf"
-                        class="w-full"
-                        style="height: calc(100vh - 400px); min-height: 500px;"
-                    >
-                        <p class="p-4 text-center text-gray-600">
-                            Seu navegador não suporta a visualização de PDF.
-                            <a href="{{ pdf_url }}" 
-                               class="text-blue-600 hover:text-blue-800 underline">
-                                Clique aqui para baixar
-                            </a>
+                    
+                    <!-- Mensagem de visualização/download -->
+                    <div class="p-8 text-center bg-gray-50">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">Visualizar Espelho de Ponto</h3>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Clique no botão acima para baixar o PDF do espelho de ponto
                         </p>
-                    </iframe>
+                        <div class="mt-6">
+                            <a href="{{ pdf_url }}" 
+                               target="_blank"
+                               class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                                Abrir em Nova Aba
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Botão de Nova Busca -->
-                <div class="flex justify-center mt-6">
+                <div class="flex justify-center mt-4">
                     <a href="{% url 'buscar_ponto_form' %}"
-                       class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200">
+                        <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                   d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                         </svg>
