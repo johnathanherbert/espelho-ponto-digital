@@ -48,22 +48,20 @@
                     </div>
                 </div>
 
-                <!-- Visualizador de PDF com fallback -->
+                <!-- Visualizador de PDF com fallback e permissões -->
                 <div class="rounded-lg overflow-hidden shadow-lg border border-gray-200">
                     <div class="bg-gray-50 border-b border-gray-200 px-3 py-2 flex justify-between items-center">
                         <span class="text-sm font-medium text-gray-700">Espelho de Ponto</span>
-                        <a href="{{ pdf_url }}" 
-                           download="espelho_ponto_{{ colaborador.nome }}.pdf"
-                           class="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors">
+                        <button onclick="requestPermissionAndDownload('{{ pdf_url }}', 'espelho_ponto_{{ colaborador.nome }}.pdf')"
+                                class="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                                       d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                             </svg>
                             Baixar PDF
-                        </a>
+                        </button>
                     </div>
                     
-                    <!-- Mensagem de visualização/download -->
                     <div class="p-8 text-center bg-gray-50">
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -74,11 +72,10 @@
                             Clique no botão acima para baixar o PDF do espelho de ponto
                         </p>
                         <div class="mt-6">
-                            <a href="{{ pdf_url }}" 
-                               target="_blank"
-                               class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                            <button onclick="requestPermissionAndOpen('{{ pdf_url }}')"
+                                    class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
                                 Abrir em Nova Aba
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -98,4 +95,75 @@
         </div>
     </div>
 </div>
+
+<!-- Scripts para gerenciar permissões -->
+<script>
+async function requestPermissionAndDownload(url, filename) {
+    try {
+        // Verifica se é um dispositivo móvel
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            // Solicita permissão para download
+            if (window.Notification && Notification.permission !== "granted") {
+                await Notification.requestPermission();
+            }
+        }
+
+        // Tenta fazer o download
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(downloadUrl);
+        document.body.removeChild(a);
+
+        // Notifica o usuário
+        if (Notification.permission === "granted") {
+            new Notification("Download Iniciado", {
+                body: "Seu arquivo está sendo baixado",
+                icon: "/static/images/icon.png" // Adicione um ícone se desejar
+            });
+        }
+    } catch (error) {
+        console.error('Erro ao baixar:', error);
+        alert('Houve um erro ao baixar o arquivo. Por favor, tente novamente.');
+    }
+}
+
+async function requestPermissionAndOpen(url) {
+    try {
+        // Verifica se é um dispositivo móvel
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            // Solicita permissão para abrir em nova aba
+            if (window.Notification && Notification.permission !== "granted") {
+                await Notification.requestPermission();
+            }
+        }
+
+        // Abre em nova aba
+        window.open(url, '_blank');
+
+        // Notifica o usuário
+        if (Notification.permission === "granted") {
+            new Notification("Arquivo Aberto", {
+                body: "O arquivo foi aberto em uma nova aba",
+                icon: "/static/images/icon.png" // Adicione um ícone se desejar
+            });
+        }
+    } catch (error) {
+        console.error('Erro ao abrir:', error);
+        alert('Houve um erro ao abrir o arquivo. Por favor, tente novamente.');
+    }
+}
+
+// Solicita permissão assim que a página carrega
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.Notification && Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+});
+</script>
 {% endblock %}
