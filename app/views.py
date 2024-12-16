@@ -107,10 +107,23 @@ def buscar_ponto_form(request):
 
 # Adicione esta view para servir os PDFs
 def serve_pdf(request, path):
-    response = serve(request, path, document_root=settings.MEDIA_ROOT)
-    response['Content-Type'] = 'application/pdf'
-    response['X-Frame-Options'] = 'SAMEORIGIN'
-    return response
+    file_path = os.path.join(settings.MEDIA_ROOT, path)
+    print(f"Tentando servir PDF: {file_path}")  # Debug
+    print(f"O arquivo existe? {os.path.exists(file_path)}")  # Debug
+    
+    if os.path.exists(file_path):
+        try:
+            response = FileResponse(open(file_path, 'rb'), content_type='application/pdf')
+            response['Content-Disposition'] = 'inline; filename="' + os.path.basename(file_path) + '"'
+            response['X-Frame-Options'] = 'SAMEORIGIN'
+            print(f"Cabeçalhos da resposta: {dict(response.headers)}")  # Debug
+            return response
+        except Exception as e:
+            print(f"Erro ao servir PDF: {str(e)}")  # Debug
+            return HttpResponse(f'Erro ao abrir arquivo: {str(e)}', status=500)
+    
+    print("Arquivo não encontrado")  # Debug
+    return HttpResponse('Arquivo não encontrado', status=404)
 
 def create_superuser(request):
     # Chave secreta para autorização

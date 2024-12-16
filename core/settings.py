@@ -370,8 +370,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.railway.app',
-    'http://127.0.0.1:8000/'
-    # adicione outros domínios conforme necessário
+    'http://127.0.0.1:8000',
+    # seu domínio aqui
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -390,3 +390,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Configurar WhiteNoise para servir arquivos de mídia também
 WHITENOISE_ROOT = MEDIA_ROOT
+
+# Configurações de segurança para PDFs
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+SECURE_CONTENT_TYPE_NOSNIFF = True

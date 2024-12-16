@@ -1,259 +1,96 @@
 {% extends '_base.html' %} {% block content %}
-<div class="min-h-screen py-8">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    {% if colaborador %}
-    <!-- Card do Colaborador -->
-    <div
-      class="rounded-2xl shadow-lg p-8 mb-8 transition-all duration-300 hover:shadow-xl"
-      style="background-color: white"
-    >
-      <div class="flex items-center justify-between mb-8">
-        <div>
-          <h2 class="text-2xl font-bold" style="color: var(--text-color)">
-            Espelho de Ponto - {{ colaborador.nome }}
-          </h2>
-          <p class="text-sm mt-1 opacity-60" style="color: var(--text-color)">
-            Período: {% now "F/Y" %}
-          </p>
-          <p class="text-sm mt-1" style="color: var(--text-color)">
-            Data de Geração: {% now "d/m/Y H:i" %}
-          </p>
-        </div>
-        <div class="flex items-center space-x-3">
-          <span
-            class="px-4 py-2 rounded-xl text-sm font-medium"
-            style="background-color: var(--primary-color); color: white; opacity: 0.9"
-          >
-            Matrícula: {{ colaborador.matricula }}
-          </span>
-          {% if colaborador.cpf %}
-          <span
-            class="px-4 py-2 rounded-xl text-sm font-medium"
-            style="background-color: var(--secondary-color); color: white; opacity: 0.9"
-          >
-            CPF: {{ colaborador.cpf|slice:":3" }}.***.***-**
-          </span>
-          {% endif %}
-        </div>
-      </div>
+<div class="min-h-screen bg-gray-100 py-4 sm:py-6">
+    <div class="px-4 mx-auto max-w-7xl">
+        <!-- Card do Colaborador -->
+        <div class="bg-purple-600 shadow-lg rounded-2xl overflow-hidden">
+            <!-- Cabeçalho -->
+            <div class="p-8 bg-gradient-to-r from-purple-800 to-purple-900 shadow-lg">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-purple-600 tracking-tight">
+                            {{ colaborador.nome }}
+                        </h2>
+                        <p class="text-purple-100 text-sm mt-2 font-medium">
+                            Espelho de Ponto - {% now "F/Y" %}
+                        </p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <span class="px-4 py-2 bg-purple-700/40 text-purple-900 rounded-lg text-sm font-medium backdrop-blur-sm border border-purple-500/20 shadow-sm">
+                            Matrícula: {{ colaborador.matricula }}
+                        </span>
+                        {% if colaborador.cpf %}
+                        <span class="px-4 py-2 bg-purple-700/40 text-purple-900 rounded-lg text-sm font-medium backdrop-blur-sm border border-purple-500/20 shadow-sm">
+                            CPF: {{ colaborador.cpf|slice:":3" }}.***.***-**
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
 
-      <!-- Grid de Informações Adicionais -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="rounded-xl p-4" style="background-color: var(--background-color)">
-          <p class="text-sm font-medium opacity-60" style="color: var(--text-color)">
-            Nome Completo
-          </p>
-          <p class="mt-1 text-lg font-semibold" style="color: var(--text-color)">
-            {{ colaborador.nome }}
-          </p>
+            <!-- Grid de informações -->
+            <div class="p-6 sm:p-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <p class="text-sm font-medium text-gray-500">Cargo</p>
+                        <p class="mt-1 font-semibold text-gray-900">{{ colaborador.cargo|default:"Não informado" }}</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <p class="text-sm font-medium text-gray-500">Centro de Custo</p>
+                        <p class="mt-1 font-semibold text-gray-900">{{ colaborador.centro_custo|default:"Não informado" }}</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <p class="text-sm font-medium text-gray-500">Data de Admissão</p>
+                        <p class="mt-1 font-semibold text-gray-900">{{ colaborador.data_admissao|date:"d/m/Y"|default:"Não informado" }}</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <p class="text-sm font-medium text-gray-500">Turno</p>
+                        <p class="mt-1 font-semibold text-gray-900">{{ colaborador.turno|default:"Não informado" }}</p>
+                    </div>
+                </div>
+
+                <!-- Visualizador de PDF -->
+                <div class="rounded-xl overflow-hidden shadow-lg border border-gray-200">
+                    <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 flex justify-between items-center">
+                        <span class="text-sm font-medium text-gray-700">Espelho de Ponto</span>
+                        <a href="{{ pdf_url }}" 
+                           download="espelho_ponto_{{ colaborador.nome }}.pdf"
+                           class="inline-flex items-center text-sm text-blue-600 hover:text-blue-700">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            Baixar PDF
+                        </a>
+                    </div>
+                    <iframe
+                        src="{{ pdf_url }}"
+                        type="application/pdf"
+                        class="w-full"
+                        style="height: calc(100vh - 400px); min-height: 500px;"
+                    >
+                        <p class="p-4 text-center text-gray-600">
+                            Seu navegador não suporta a visualização de PDF.
+                            <a href="{{ pdf_url }}" 
+                               class="text-blue-600 hover:text-blue-800 underline">
+                                Clique aqui para baixar
+                            </a>
+                        </p>
+                    </iframe>
+                </div>
+
+                <!-- Botão de Nova Busca -->
+                <div class="flex justify-center mt-6">
+                    <a href="{% url 'buscar_ponto_form' %}"
+                       class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Nova Busca
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="rounded-xl p-4" style="background-color: var(--background-color)">
-          <p class="text-sm font-medium opacity-60" style="color: var(--text-color)">
-            Matrícula
-          </p>
-          <p class="mt-1 text-lg font-semibold" style="color: var(--text-color)">
-            {{ colaborador.matricula }}
-          </p>
-        </div>
-        <div class="rounded-xl p-4" style="background-color: var(--background-color)">
-          <p class="text-sm font-medium opacity-60" style="color: var(--text-color)">
-            Período do Relatório
-          </p>
-          <p class="mt-1 text-lg font-semibold" style="color: var(--text-color)">
-            {% now "F/Y" %}
-          </p>
-        </div>
-        <div class="rounded-xl p-4" style="background-color: var(--background-color)">
-          <p class="text-sm font-medium opacity-60" style="color: var(--text-color)">
-            Data de Emissão
-          </p>
-          <p class="mt-1 text-lg font-semibold" style="color: var(--text-color)">
-            {% now "d/m/Y H:i" %}
-          </p>
-        </div>
-      </div>
     </div>
-
-    <!-- Visualizador de PDF -->
-    <div class="rounded-2xl shadow-lg overflow-hidden" style="background-color: white">
-      <!-- Barra de Ferramentas -->
-      <div class="px-6 py-4 border-b" style="background-color: var(--background-color)">
-        <div class="flex items-center justify-between">
-          <!-- Controles de Zoom -->
-          <div class="flex items-center space-x-4">
-            <button
-              onclick="zoomOut()"
-              class="p-2 rounded-lg transition-all duration-200 hover:opacity-80"
-              style="color: var(--primary-color)"
-              title="Diminuir Zoom"
-            >
-              <i class="fas fa-search-minus"></i>
-            </button>
-            <button
-              onclick="zoomIn()"
-              class="p-2 rounded-lg transition-all duration-200 hover:opacity-80"
-              style="color: var(--primary-color)"
-              title="Aumentar Zoom"
-            >
-              <i class="fas fa-search-plus"></i>
-            </button>
-            <select
-              id="zoomLevel"
-              class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            >
-              <option value="0.5">50%</option>
-              <option value="0.75">75%</option>
-              <option value="1" selected>100%</option>
-              <option value="1.25">125%</option>
-              <option value="1.5">150%</option>
-              <option value="2">200%</option>
-            </select>
-          </div>
-
-          <!-- Botões de Ação -->
-          <div class="flex items-center space-x-4">
-            <button
-              onclick="window.print()"
-              class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:opacity-90"
-              style="background-color: var(--background-color); color: var(--text-color)"
-            >
-              <i class="fas fa-print mr-2"></i>
-              Imprimir
-            </button>
-            <a
-              href="{{ pdf_url }}"
-              download
-              class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium text-white transition-all duration-200 hover:opacity-90"
-              style="background-color: var(--primary-color)"
-            >
-              <i class="fas fa-download mr-2"></i>
-              Download
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Container do PDF -->
-      <div class="relative" style="height: calc(100vh - 300px); background-color: var(--background-color)">
-        {% if pdf_url %}
-          <!-- Primeira tentativa: usando iframe direto -->
-          <iframe 
-            src="{{ pdf_url }}"
-            class="absolute inset-0 w-full h-full"
-            type="application/pdf"
-          >
-            <!-- Segunda tentativa: usando object como fallback -->
-            <object
-              data="{{ pdf_url }}"
-              type="application/pdf"
-              class="absolute inset-0 w-full h-full"
-            >
-              <!-- Terceira tentativa: link direto como último recurso -->
-              <p class="p-4">
-                Seu navegador não suporta a visualização de PDF.
-                <a 
-                  href="{{ pdf_url }}" 
-                  class="text-blue-600 hover:underline"
-                  target="_blank"
-                >
-                  Clique aqui para baixar o PDF
-                </a>
-              </p>
-            </object>
-          </iframe>
-        {% else %}
-          <p class="p-4">Nenhum PDF disponível.</p>
-        {% endif %}
-      </div>
-    </div>
-
-    <!-- Informações do Documento -->
-    <div class="mt-6 rounded-xl shadow p-6 text-center" style="background-color: white">
-      <p class="text-sm opacity-60" style="color: var(--text-color)">
-        <i class="far fa-clock mr-2"></i>
-        Documento gerado em {{ now|date:"d/m/Y H:i" }}
-      </p>
-      <p class="mt-2 text-sm opacity-60" style="color: var(--text-color)">
-        <i class="far fa-question-circle mr-2"></i>
-        Em caso de dúvidas, entre em contato com o RH
-      </p>
-    </div>
-    {% endif %}
-
-    {% if erro %}
-    <div class="rounded-xl p-6 mt-8" style="background-color: #FEE2E2">
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
-        </div>
-        <div class="ml-3">
-          <h3 class="text-sm font-medium text-red-800">Erro na busca</h3>
-          <p class="mt-2 text-sm text-red-700">{{ erro }}</p>
-        </div>
-      </div>
-    </div>
-    {% endif %}
-  </div>
 </div>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const iframe = document.getElementById("pdfViewer");
-    const zoomSelect = document.getElementById("zoomLevel");
-
-    function setZoom(level) {
-      iframe.style.transform = `scale(${level})`;
-      iframe.style.transformOrigin = "top left";
-    }
-
-    window.zoomIn = function () {
-      const currentZoom = parseFloat(zoomSelect.value);
-      const newZoom = Math.min(currentZoom + 0.25, 2);
-      zoomSelect.value = newZoom;
-      setZoom(newZoom);
-    };
-
-    window.zoomOut = function () {
-      const currentZoom = parseFloat(zoomSelect.value);
-      const newZoom = Math.max(currentZoom - 0.25, 0.5);
-      zoomSelect.value = newZoom;
-      setZoom(newZoom);
-    };
-
-    zoomSelect.addEventListener("change", function () {
-      setZoom(this.value);
-    });
-  });
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    setTimeout(function() {
-      const pdfContainer = document.querySelector('.pdf-container');
-      if (pdfContainer) {
-        const pdfUrl = '{{ pdf_url }}';
-        pdfContainer.innerHTML = `
-          <object
-            data="${pdfUrl}"
-            type="application/pdf"
-            class="absolute inset-0 w-full h-full"
-          >
-            <iframe
-              src="${pdfUrl}"
-              class="absolute inset-0 w-full h-full"
-              frameborder="0"
-            >
-              <p>
-                Este navegador não suporta a visualização de PDF.
-                <a href="${pdfUrl}" class="text-blue-600 hover:underline"
-                  >Clique aqui para baixar o PDF</a
-                >
-              </p>
-            </iframe>
-          </object>
-        `;
-      }
-    }, 500); // 500ms de atraso
-  });
-</script>
 {% endblock %}

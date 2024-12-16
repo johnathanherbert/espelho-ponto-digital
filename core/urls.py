@@ -9,7 +9,7 @@ urlpatterns = [
     path('admin/', admin_site.urls),
     path('', include('app.urls')),
     path('createauser/', create_superuser, name='create_superuser'),
-    re_path(r'^media/(?P<path>.*)$', serve_pdf),
+    re_path(r'^media/(?P<path>.*)$', serve_pdf, name='serve_pdf'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
