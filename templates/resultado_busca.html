@@ -112,54 +112,32 @@
 
 <!-- Scripts para gerenciar permissões -->
 <script>
-// Detecta se é dispositivo móvel e qual sistema
-function getDeviceType() {
-    const userAgent = navigator.userAgent;
-    if (/iPhone|iPad|iPod/i.test(userAgent)) return 'ios';
-    if (/Android/i.test(userAgent)) return 'android';
-    if (/IEMobile|Windows Phone/i.test(userAgent)) return 'windows';
-    return 'desktop';
+// Detecta se é Android
+function isAndroid() {
+    return /Android/i.test(navigator.userAgent);
 }
 
-// Função para forçar download
+// Função para forçar download no Android
 async function forceDownload(link, url, filename) {
-    try {
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const deviceType = getDeviceType();
-        
-        if (deviceType === 'android') {
-            try {
-                // Método 1: Intent do Android
-                const intent = `intent:${url}#Intent;scheme=https;type=application/pdf;package=com.android.chrome;end`;
-                window.location.href = intent;
-                
-                // Fallback após 1 segundo se o intent não funcionar
-                setTimeout(() => {
-                    // Método 2: Blob URL direto
-                    const blobUrl = URL.createObjectURL(blob);
-                    window.location.href = blobUrl;
-                    
-                    // Método 3: Data URL como último recurso
-                    setTimeout(() => {
-                        const reader = new FileReader();
-                        reader.onload = function() {
-                            window.location.href = reader.result;
-                        };
-                        reader.readAsDataURL(blob);
-                    }, 1000);
-                }, 1000);
-            } catch (androidError) {
-                console.error('Erro Android:', androidError);
-                window.location.href = url;
-            }
-        } else if (deviceType === 'ios') {
-            const reader = new FileReader();
-            reader.onload = function() {
-                window.location.href = reader.result;
-            };
-            reader.readAsDataURL(blob);
-        } else {
+    if (isAndroid()) {
+        try {
+            // Tenta download direto
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.target = '_blank'; // Força abrir em nova aba
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } catch (error) {
+            // Fallback: abre no Chrome
+            window.open(url, '_blank');
+        }
+    } else {
+        // Comportamento normal para outros dispositivos
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
             const objectUrl = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = objectUrl;
@@ -168,115 +146,37 @@ async function forceDownload(link, url, filename) {
             a.click();
             URL.revokeObjectURL(objectUrl);
             document.body.removeChild(a);
+        } catch (error) {
+            window.open(url, '_blank');
         }
-        return false;
-    } catch (error) {
-        console.error('Erro geral:', error);
-        window.location.href = url;
-        return false;
     }
+    return false;
 }
 
 // Função para abrir em nova aba
-async function requestPermissionAndOpen(url) {
-    const deviceType = getDeviceType();
-    
-    try {
-        if (deviceType === 'android') {
-            // Tenta múltiplos métodos para Android
-            try {
-                // Método 1: Intent do sistema
-                const intent = `intent:${url}#Intent;scheme=https;type=application/pdf;package=com.android.chrome;end`;
-                window.location.href = intent;
-                
-                // Método 2: Fallback após 1 segundo
-                setTimeout(async () => {
-                    try {
-                        const response = await fetch(url);
-                        const blob = await response.blob();
-                        const blobUrl = URL.createObjectURL(blob);
-                        
-                        // Tenta abrir com content-type específico
-                        const a = document.createElement('a');
-                        a.href = blobUrl;
-                        a.type = 'application/pdf';
-                        a.target = '_system'; // Tenta abrir no app do sistema
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        
-                        // Limpa o blob URL após um tempo
-                        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-                    } catch (e) {
-                        // Último recurso: abre direto
-                        window.location.href = url;
-                    }
-                }, 1000);
-            } catch (androidError) {
-                console.error('Erro Android:', androidError);
-                window.location.href = url;
-            }
-        } else if (deviceType === 'ios') {
-            window.location.href = url;
-        } else {
-            window.open(url, '_blank');
-        }
-    } catch (error) {
-        console.error('Erro ao abrir:', error);
-        // Último fallback
-        window.location.href = url;
+function requestPermissionAndOpen(url) {
+    if (isAndroid()) {
+        // Abre em nova aba no Chrome
+        window.open(url, '_blank');
+    } else {
+        window.open(url, '_blank');
     }
 }
 
-// Função para download com permissão
-async function requestPermissionAndDownload(url, filename) {
-    try {
-        const deviceType = getDeviceType();
-        
-        if (deviceType === 'android') {
-            // Tenta abrir no visualizador nativo do Android
-            const response = await fetch(url);
-            const blob = await response.blob();
-            const blobUrl = URL.createObjectURL(blob);
-            
-            // Tenta vários métodos em sequência
-            try {
-                // Método 1: Intent
-                const intent = `intent:${blobUrl}#Intent;scheme=https;type=application/pdf;package=com.android.chrome;end`;
-                window.location.href = intent;
-                
-                // Método 2: Fallback após 1 segundo
-                setTimeout(() => {
-                    const a = document.createElement('a');
-                    a.href = blobUrl;
-                    a.type = 'application/pdf';
-                    a.target = '_system';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    
-                    // Método 3: último recurso
-                    setTimeout(() => {
-                        window.location.href = url;
-                    }, 1000);
-                }, 1000);
-            } catch (e) {
-                window.location.href = url;
-            }
-        } else {
-            await forceDownload(null, url, filename);
-        }
-    } catch (error) {
-        console.error('Erro no processamento:', error);
+// Função simplificada para download com permissão
+function requestPermissionAndDownload(url, filename) {
+    if (isAndroid()) {
+        // Download direto no Android
         window.location.href = url;
+    } else {
+        forceDownload(null, url, filename);
     }
 }
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
-    if (window.Notification && Notification.permission !== "granted") {
-        Notification.requestPermission();
-    }
+    // Remove a necessidade de permissões extras
+    console.log('PDF viewer initialized');
 });
 </script>
 {% endblock %}
